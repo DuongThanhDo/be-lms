@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { User } from '../users/user.entity';
 import { CourseType } from 'src/common/constants/enum';
 import { Chapter } from './chapters/chapters.entity';
+import { Media } from '../medias/media.entity';
 
 @Entity('courses')
 export class Course {
@@ -30,8 +31,9 @@ export class Course {
   @Column({ type: 'enum', enum: CourseType })
   type: CourseType;
 
-  @Column({ length: 255, nullable: true })
-  image: string;
+  @OneToOne(() => Media, (media) => media.course)
+  @JoinColumn({ name: 'image' })
+  image: Media;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;

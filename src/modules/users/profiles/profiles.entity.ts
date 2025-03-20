@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { User } from '../user.entity';
+import { Media } from 'src/modules/medias/media.entity';
 
 @Entity('user_profiles')
 export class UserProfile {
@@ -25,6 +26,7 @@ export class UserProfile {
   @Column({ length: 255, nullable: true })
   address: string;
 
-  @Column({ length: 255, nullable: true })
-  avatar: string;
+  @OneToOne(() => Media, (media) => media.avatar)
+  @JoinColumn({ name: 'avatar' })
+  avatar: Media;
 }

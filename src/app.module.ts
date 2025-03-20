@@ -10,13 +10,19 @@ import { ProfessionsModule } from './modules/users/professions/professions.modul
 import { CoursesModule } from './modules/courses/courses.module';
 import { ChaptersModule } from './modules/courses/chapters/chapters.module';
 import { LecturesModule } from './modules/courses/chapters/lectures/lectures.module';
+import { CentralInformationModule } from './modules/central_information/central-information.module';
+import { RoomModule } from './modules/central_information/rooms/room.module';
+import { MediaModule } from './modules/medias/media.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(databaseConfig),
     UsersModule,
     ProfilesModule,
     ProfessionsModule,
-    CoursesModule,ChaptersModule, LecturesModule],
+    CoursesModule,ChaptersModule, LecturesModule,
+    CentralInformationModule,RoomModule,
+    MediaModule
+  ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],
 })

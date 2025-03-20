@@ -11,24 +11,21 @@ export class CreateCourseDto {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   category: string;
 
+  @IsOptional()
   @IsNotEmpty()
   price: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(CourseType)
   type: CourseType;
-
-  @IsOptional()
-  @IsString()
-  image?: string;
 }
 
 export class UpdateCourseDto extends PartialType(CreateCourseDto) {}

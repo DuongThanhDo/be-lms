@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Chapter } from '../chapters.entity';
+import { Media } from 'src/modules/medias/media.entity';
 
 @Entity('lectures')
 export class Lecture {
@@ -9,8 +10,9 @@ export class Lecture {
   @ManyToOne(() => Chapter, (chapter) => chapter.lectures, { onDelete: 'CASCADE' })
   chapter: Chapter;
 
-  @Column({ length: 255 })
-  video_url: string;
+  @OneToOne(() => Media, (media) => media.lecture)
+  @JoinColumn({ name: 'video_url' })
+  video: Media;
 
   @Column({ type: 'int' })
   order: number;

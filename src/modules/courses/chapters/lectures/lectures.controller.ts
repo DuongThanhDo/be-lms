@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UploadedFile, ParseIntPipe, Put, UseInterceptors } from '@nestjs/common';
 import { LecturesService } from './lectures.service';
 import { CreateLectureDto, UpdateLectureDto } from './lectures.dto';
 import { Lecture } from './lectures.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('lectures')
 export class LecturesController {
@@ -22,9 +23,18 @@ export class LecturesController {
     return await this.lecturesService.create(createLectureDto);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(@Param('id') id: number, @Body() updateLectureDto: UpdateLectureDto): Promise<Lecture> {
     return await this.lecturesService.update(id, updateLectureDto);
+  }
+
+  @Put('/upload/:id')
+  @UseInterceptors(FileInterceptor('file')) 
+  updateLectureVideo(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: any,
+  ): Promise<Lecture> {
+    return this.lecturesService.updateLectureVideo(id, file);
   }
 
   @Delete(':id')

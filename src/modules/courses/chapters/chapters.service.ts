@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Chapter } from './chapters.entity';
 import { CreateChapterDto, UpdateChapterDto } from './chapters.dto';
 import { Course } from '../courses.entity';
+import { Lecture } from './lectures/lectures.entity';
 
 @Injectable()
 export class ChaptersService {
@@ -12,6 +13,8 @@ export class ChaptersService {
     private chapterRepository: Repository<Chapter>,
     @InjectRepository(Course)
     private courseRepository: Repository<Course>,
+    @InjectRepository(Lecture)
+    private lectureRepository: Repository<Lecture>,
   ) {}
 
   async findAll(courseId: number): Promise<Chapter[]> {
@@ -67,19 +70,22 @@ export class ChaptersService {
   async getChaptersWithContent(courseId: number): Promise<any[]> {
     const chapters = await this.chapterRepository.find({
       where: { course: { id: courseId } },
-      relations: ['lectures'],
+      relations: ['lectures', 'lectures.video'],
     //   relations: ['lectures', 'quizzes'],
       order: { order: 'ASC' },
     });
+    
   
     return chapters.map((chapter) => {
-      const lectures = chapter.lectures ? chapter.lectures.map((lecture) => ({
-        type: 'lecture',
-        id: lecture.id,
-        video_url: lecture.video_url,
-        order: lecture.order,
-        description: lecture.description,
-      })) : [];
+      const lectures = chapter.lectures
+        ? chapter.lectures.map((lecture) => ({
+            type: 'lecture',
+            id: lecture.id,
+            video: lecture.video ? lecture.video : null,
+            order: lecture.order,
+            description: lecture.description,
+          }))
+        : [];
   
     //   const quizzes = chapter.quizzes ? chapter.quizzes.map((quiz) => ({
     //     type: 'quiz',

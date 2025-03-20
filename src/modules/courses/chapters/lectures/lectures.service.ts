@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateLectureDto, UpdateLectureDto } from './lectures.dto';
 import { Lecture } from './lectures.entity';
 import { Chapter } from '../chapters.entity';
+import { MediaService } from 'src/modules/medias/media.service';
 
 @Injectable()
 export class LecturesService {
@@ -12,6 +13,7 @@ export class LecturesService {
     private lectureRepository: Repository<Lecture>,
     @InjectRepository(Chapter)
     private chapterRepository: Repository<Chapter>,
+        private readonly mediaService: MediaService
   ) {}
 
   async findAll(chapterId: number): Promise<Lecture[]> {
@@ -43,6 +45,27 @@ export class LecturesService {
     Object.assign(lecture, dto);
     return await this.lectureRepository.save(lecture);
   }
+
+  async updateLectureVideo(id: number, file: any): Promise<Lecture> {
+    const lecture = await this.lectureRepository.findOne({
+      where: { id },
+      relations: ['video'],
+    });
+  
+    if (!lecture) {
+      throw new NotFoundException('Lecture not found');
+    }
+  
+    if (lecture.video) {
+      await this.mediaService.deleteFile(lecture.video.id);
+    }
+  
+    const media = await this.mediaService.uploadFile(file);
+    lecture.video = media;
+  
+    return this.lectureRepository.save(lecture);
+  }
+  
 
   async remove(id: number): Promise<void> {
     const result = await this.lectureRepository.delete(id);

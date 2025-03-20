@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto, UpdateCourseDto } from './courses.dto';
 import { Course } from './courses.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('courses')
 export class CoursesController {
@@ -30,8 +31,17 @@ export class CoursesController {
     return this.coursesService.update(id, updateCourseDto);
   }
 
+  @Put('/upload/:id')
+  @UseInterceptors(FileInterceptor('file')) 
+  updateCourseImage(
+    @Param('id') id: string,
+    @UploadedFile() file: any,
+  ): Promise<Course> {
+    return this.coursesService.updateCourseImage(parseInt(id), file);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id') id: number): Promise<boolean> {
     return this.coursesService.remove(id);
   }
 }

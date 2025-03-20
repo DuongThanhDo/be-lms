@@ -25,10 +25,6 @@ export class CreateUserProfileDto {
   @IsOptional()
   @IsString()
   address?: string;
-
-  @IsOptional()
-  @IsString()
-  avatar?: string;
 }
 
 export class UpdateUserProfileDto extends PartialType(CreateUserProfileDto) {}

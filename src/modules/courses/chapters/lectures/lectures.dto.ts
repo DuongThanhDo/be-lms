@@ -6,10 +6,6 @@ export class CreateLectureDto {
   chapterId: number;
 
   @IsNotEmpty()
-  @IsUrl()
-  video_url: string;
-
-  @IsNotEmpty()
   @IsInt()
   order: number;
 
@@ -19,8 +15,6 @@ export class CreateLectureDto {
 }
 
 export class UpdateLectureDto {
-  @IsUrl()
-  video_url?: string;
 
   @IsInt()
   order?: number;
