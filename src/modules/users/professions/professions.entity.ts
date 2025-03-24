@@ -6,7 +6,7 @@ export class Profession  {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.profiles, { cascade: true })
+  @OneToOne(() => User, (user) => user.profession, { cascade: true })
   @JoinColumn()
   user: User;
 

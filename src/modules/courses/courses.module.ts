@@ -5,7 +5,7 @@ import { CoursesService } from "./courses.service";
 import { CoursesController } from "./courses.controller";
 import { User } from "../users/user.entity";
 import { Media } from "../medias/media.entity";
-import { MediaModule } from "../medias/media.module";
+import { MediaModule } from "../medias/medias.module";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Course, User, Media]), MediaModule],

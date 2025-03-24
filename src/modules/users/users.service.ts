@@ -1,5 +1,10 @@
-import { CreateUserDto, ExistingUserDto } from './user.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ChangePasswordDto, CreateUserDto, ExistingUserDto } from './user.dto';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { UserProfile } from './profiles/profiles.entity';
 import { UserRole } from 'src/common/constants/enum';
 import { Profession } from './professions/professions.entity';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -51,13 +57,15 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.find();
-    return users;
+    return plainToInstance(User, users);
   }
 
   async findById(id: number): Promise<User | null> {
-    return this.userRepository.findOne({
+    const users = await this.userRepository.findOne({
       where: { id: id },
     });
+
+    return plainToInstance(User, users);
   }
 
   async findByEmail(email: string): Promise<User | any> {
@@ -72,7 +80,9 @@ export class UsersService {
 
       const existingUser = await this.findByEmail(email);
 
-      if (existingUser) return 'Email taken!';
+      if (existingUser) {
+        throw new BadRequestException('Email đã tồn tại!');
+      }
 
       const hashPassword = await this.hashPassword(password);
 
@@ -83,13 +93,11 @@ export class UsersService {
       });
       const savedUser = await this.userRepository.save(newUser);
 
-      // Tự động tạo Profile mặc định cho User
       const profile = this.userProfileRepository.create({
         user: savedUser,
       });
       await this.userProfileRepository.save(profile);
 
-      // Thêm chuyên ngành rỗng cho User
       if (role === UserRole.TEACHER) {
         const profession = this.professionRepository.create({
           user: savedUser,
@@ -110,13 +118,31 @@ export class UsersService {
     existingUserDto: ExistingUserDto,
   ): Promise<{ token: string } | null | User | any> {
     const { email, password } = existingUserDto;
-    const user = await this.validateUser(email, password);
+    const vUser = await this.validateUser(email, password);
 
-    if (!user) return null;
+    if (!vUser) return null;
+
+    const user = plainToInstance(User, vUser);
 
     const jwt = await this.jwtService.signAsync({ user });
-    console.log(jwt);
 
-    return {token: jwt};
+    return { token: jwt };
   }
+
+  async changePassword(changeDto: ChangePasswordDto): Promise<any> {
+    const { email, oldPassword, newPassword } = changeDto;
+    
+    const user = await this.validateUser(email, oldPassword);
+  
+    if (!user) throw new BadRequestException('Mật khẩu cũ sai!');
+  
+    const hashPassword = await this.hashPassword(newPassword);
+  
+    user.password = hashPassword;
+  
+    await this.userRepository.save(user);
+  
+    return { message: 'Mật khẩu đã được thay đổi thành công!' };
+  }
+  
 }

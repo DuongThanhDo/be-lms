@@ -1,8 +1,9 @@
 import { UserRole } from 'src/common/constants/enum';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { UserProfile } from './profiles/profiles.entity';
 import { Profession } from './professions/professions.entity';
 import { Course } from '../courses/courses.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -13,6 +14,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({
@@ -26,10 +28,10 @@ export class User {
   create_at: Date;
 
   @OneToOne(() => UserProfile, (profile) => profile.user)
-  profiles: UserProfile;
+  profile: UserProfile;
   
   @OneToOne(() => Profession, (professions) => professions.user)
-  professions: Profession;
+  profession: Profession;
 
   @OneToMany(() => Course, (course) => course.teacher)
   courses: Course[];

@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, ExistingUserDto } from './user.dto';
+import { CreateUserDto, ExistingUserDto, ChangePasswordDto } from './user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -25,5 +25,10 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() existingUserDto: ExistingUserDto) {
     return this.usersService.login(existingUserDto);
+  }
+
+  @Patch('change-password')
+  async ChangePassword(@Body() changePassword: ChangePasswordDto) {
+    return this.usersService.changePassword(changePassword);
   }
 }

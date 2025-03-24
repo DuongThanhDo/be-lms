@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserProfile } from './profiles.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserProfileDto } from './profiles.dto';
-import { MediaService } from 'src/modules/medias/media.service';
+import { MediaService } from 'src/modules/medias/medias.service';
 
 @Injectable()
 export class ProfilesService {

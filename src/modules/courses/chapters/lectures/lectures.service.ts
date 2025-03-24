@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateLectureDto, UpdateLectureDto } from './lectures.dto';
 import { Lecture } from './lectures.entity';
 import { Chapter } from '../chapters.entity';
-import { MediaService } from 'src/modules/medias/media.service';
+import { MediaService } from 'src/modules/medias/medias.service';
 
 @Injectable()
 export class LecturesService {

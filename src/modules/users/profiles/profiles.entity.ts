@@ -7,7 +7,7 @@ export class UserProfile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.profiles, { cascade: true })
+  @OneToOne(() => User, (user) => user.profile, { cascade: true })
   @JoinColumn()
   user: User;
 

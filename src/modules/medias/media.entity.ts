@@ -26,7 +26,7 @@ export class Media {
   @Column({ nullable: true })
   service: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   // ---------------------

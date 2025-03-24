@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Delete, Param, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { MediaService } from './media.service';
+import { MediaService } from './medias.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('medias')
