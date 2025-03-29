@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne, CreateDateColumn } from 'typeorm';
 import { User } from '../users/user.entity';
-import { CourseType } from 'src/common/constants/enum';
+import { CourseStatus, CourseType } from 'src/common/constants/enum';
 import { Chapter } from './chapters/chapters.entity';
 import { Media } from '../medias/media.entity';
+import { Category } from '../central_information/categories/category.entity';
 
 @Entity('courses')
 export class Course {
@@ -19,13 +20,14 @@ export class Course {
   @Column({ length: 255 })
   name: string;
 
-  @Column('text')
+  @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ length: 255 })
-  category: string;
+  @OneToOne(() => Category, (category) => category.course )
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   price: number;
 
   @Column({ type: 'enum', enum: CourseType })
@@ -34,6 +36,9 @@ export class Course {
   @OneToOne(() => Media, (media) => media.course)
   @JoinColumn({ name: 'image' })
   image: Media;
+
+  @Column({ type: "enum", enum: CourseStatus, default: CourseStatus.DRAFT })
+  status: CourseStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;

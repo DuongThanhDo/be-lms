@@ -12,7 +12,6 @@ export class Profession  {
 
   @Column({ length: 255, nullable: true })
   major: string;
-
   @Column({ length: 255, nullable: true })
   level: string;
 

@@ -21,12 +21,12 @@ export class ProfilesController {
     return this.profilesService.update(id, updateUserProfileDto);
   }
 
-    @Put('/upload/:id')
-    @UseInterceptors(FileInterceptor('file')) 
-    updateProfileAvatar(
-      @Param('id') id: string,
-      @UploadedFile() file: any,
-    ): Promise<UserProfile> {
-      return this.profilesService.updateProfileAvatar(parseInt(id), file);
-    }
+  @Put('/upload/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  updateProfileAvatar(
+    @Param('id') id: string,
+    @UploadedFile() file: any,
+  ): Promise<UserProfile> {
+    return this.profilesService.updateProfileAvatar(parseInt(id), file);
+  }
 }

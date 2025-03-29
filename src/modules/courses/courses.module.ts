@@ -6,9 +6,10 @@ import { CoursesController } from "./courses.controller";
 import { User } from "../users/user.entity";
 import { Media } from "../medias/media.entity";
 import { MediaModule } from "../medias/medias.module";
+import { Category } from "../central_information/categories/category.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Course, User, Media]), MediaModule],
+    imports: [TypeOrmModule.forFeature([Course, User, Media, Category]), MediaModule],
     providers: [CoursesService],
     controllers: [CoursesController],
     exports: [CoursesService],

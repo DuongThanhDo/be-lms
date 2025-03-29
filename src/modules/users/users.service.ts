@@ -1,6 +1,7 @@
 import { ChangePasswordDto, CreateUserDto, ExistingUserDto } from './user.dto';
 import {
   BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -117,10 +118,14 @@ export class UsersService {
   async login(
     existingUserDto: ExistingUserDto,
   ): Promise<{ token: string } | null | User | any> {
-    const { email, password } = existingUserDto;
+    const { email, password, expectedRole } = existingUserDto;
     const vUser = await this.validateUser(email, password);
 
     if (!vUser) return null;
+
+    if (vUser.role !== expectedRole) {
+      throw new ForbiddenException(`Bạn không có quyền đăng nhập vào hệ thống này.`);
+    }
 
     const user = plainToInstance(User, vUser);
 
