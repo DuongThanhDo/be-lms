@@ -1,21 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { CourseStatus, CourseType } from 'src/common/constants/enum';
 import { Chapter } from './chapters/chapters.entity';
 import { Media } from '../medias/media.entity';
 import { Category } from '../central_information/categories/category.entity';
+import { CourseOutcome } from './outcomes/course-outcomes.entity';
+import { CourseRequirement } from './requirements/course-requirements.entity';
 
 @Entity('courses')
 export class Course {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.courses, { onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => User, (user) => user.courses, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinColumn({ name: 'teacher_id' })
   teacher: User;
 
   @OneToMany(() => Chapter, (chapter) => chapter.course, { cascade: true })
   chapters: Chapter[];
+
+  @OneToMany(() => CourseOutcome, (c) => c.course, { cascade: true })
+  outcomes: CourseOutcome[];
+
+  @OneToMany(() => CourseRequirement, (c) => c.course, { cascade: true })
+  requirements: CourseRequirement[];
+
 
   @Column({ length: 255 })
   name: string;
@@ -23,7 +43,10 @@ export class Course {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @OneToOne(() => Category, (category) => category.course )
+  @ManyToOne(() => Category, (category) => category.courses, {
+    onDelete: 'SET NULL',
+    eager: true,
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
@@ -37,12 +60,20 @@ export class Course {
   @JoinColumn({ name: 'image' })
   image: Media;
 
-  @Column({ type: "enum", enum: CourseStatus, default: CourseStatus.DRAFT })
+  @Column({ type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT })
   status: CourseStatus;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', update: false })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    update: false,
+  })
   created_at: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updated_at: Date;
 }

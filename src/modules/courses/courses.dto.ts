@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import {
   IsString,
   IsNotEmpty,
@@ -28,10 +27,6 @@ export class CreateCourseDto {
 
 export class UpdateCourseDto {
   @IsNotEmpty()
-  @IsNumber()
-  teacherId: number;
-
-  @IsNotEmpty()
   @IsString()
   name?: string;
 
@@ -48,10 +43,6 @@ export class UpdateCourseDto {
   price?: number;
 
   @IsOptional()
-  @IsEnum(CourseType)
-  type?: CourseType;
-
-  @IsOptional()
   @IsEnum(CourseStatus)
   status?: CourseStatus;
 }
@@ -66,8 +57,8 @@ export class SearchCourseByTearch {
   searchValue?: string;
 
   @IsOptional()
-  @IsNumber()
-  category?: number;
+  @IsString()
+  category?: string;
 
   @IsOptional()
   @IsEnum(CourseType)

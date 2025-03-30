@@ -1,5 +1,11 @@
 import { Course } from 'src/modules/courses/courses.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('categories')
 export class Category {
@@ -9,6 +15,6 @@ export class Category {
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
 
-  @OneToOne(() => Course, (c) => c.category)
-  course: Course;
+  @OneToMany(() => Course, (course) => course.category)
+  courses: Course[];
 }
