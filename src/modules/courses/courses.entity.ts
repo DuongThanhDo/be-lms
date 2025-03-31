@@ -58,7 +58,7 @@ export class Course {
 
   @OneToOne(() => Media, (media) => media.course)
   @JoinColumn({ name: 'image' })
-  image: Media;
+  image: Media | null;
 
   @Column({ type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT })
   status: CourseStatus;

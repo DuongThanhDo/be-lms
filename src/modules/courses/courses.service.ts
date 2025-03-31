@@ -124,7 +124,10 @@ export class CoursesService {
     }
 
     if (course.image) {
-      await this.mediaService.deleteFile(course.image.id);
+      const imageId = course.image.id;
+      course.image = null;
+      await this.courseRepository.save(course);
+      await this.mediaService.deleteFile(imageId);
     }
 
     const media = await this.mediaService.uploadFile(file);

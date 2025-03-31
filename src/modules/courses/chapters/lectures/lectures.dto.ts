@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsInt, IsString, IsUrl, IsOptional } from 'class-validator';
 
 export class CreateLectureDto {
   @IsNotEmpty()
@@ -6,18 +6,21 @@ export class CreateLectureDto {
   chapterId: number;
 
   @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @IsNotEmpty()
   @IsInt()
   order: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  description: string;
+  description?: string;
 }
 
 export class UpdateLectureDto {
-
-  @IsInt()
-  order?: number;
+  @IsString()
+  title?: string;
 
   @IsString()
   description?: string;

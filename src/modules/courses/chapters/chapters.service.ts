@@ -34,7 +34,7 @@ export class ChaptersService {
   }
 
   async create(dto: CreateChapterDto): Promise<Chapter> {
-    const course = await this.courseRepository.findOne({ where: { id: dto.courseId } });
+    const course = await this.courseRepository.findOne({ where: { id: Number(dto.courseId) } });
     if (!course) throw new NotFoundException(`Course with ID ${dto.courseId} not found`);
   
     const maxOrder = await this.chapterRepository
@@ -81,6 +81,7 @@ export class ChaptersService {
         ? chapter.lectures.map((lecture) => ({
             type: 'lecture',
             id: lecture.id,
+            title: lecture.title,
             video: lecture.video ? lecture.video : null,
             order: lecture.order,
             description: lecture.description,
@@ -95,9 +96,10 @@ export class ChaptersService {
     //   })) : [];
   
       return {
-        chapter: chapter.title,
+        id: chapter.id,
+        title: chapter.title,
         // content: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
-        content: [...lectures].sort((a, b) => a.order - b.order),
+        items: [...lectures].sort((a, b) => a.order - b.order),
       };
     });
   }

@@ -57,7 +57,11 @@ export class LecturesService {
     }
   
     if (lecture.video) {
-      await this.mediaService.deleteFile(lecture.video.id);
+      const videoId = lecture.video.id;
+      lecture.video = null;
+      await this.lectureRepository.save(lecture);
+
+      await this.mediaService.deleteFile(videoId);
     }
   
     const media = await this.mediaService.uploadFile(file);
