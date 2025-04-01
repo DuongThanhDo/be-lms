@@ -26,7 +26,7 @@ export class CreateCourseDto {
 }
 
 export class UpdateCourseDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name?: string;
 
@@ -39,7 +39,6 @@ export class UpdateCourseDto {
   category?: number;
 
   @IsOptional()
-  @IsNotEmpty()
   price?: number;
 
   @IsOptional()

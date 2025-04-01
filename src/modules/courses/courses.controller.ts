@@ -29,6 +29,11 @@ export class CoursesController {
     return this.coursesService.findAllByTeacher(dto);
   }
 
+  @Get('all-info/:id')
+  findAllInfoCourse(@Param('id') id: number): Promise<any[]> {
+    return this.coursesService.findAllInfoCourse(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Course> {
     return this.coursesService.findOne(id);
