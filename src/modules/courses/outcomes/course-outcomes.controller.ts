@@ -7,14 +7,14 @@ import { CourseOutcome } from './course-outcomes.entity';
 export class CourseOutcomesController {
   constructor(private readonly courseOutcomesService: CourseOutcomesService) {}
 
-  @Post()
-  create(@Body() dto: CreateCourseOutcomeDto) {
-    return this.courseOutcomesService.create(dto);
-  }
-
   @Get()
   findAll(@Query('courseId') courseId: number): Promise<CourseOutcome[]> {
     return this.courseOutcomesService.findAll(courseId);
+  }
+
+  @Post()
+  create(@Body() dto: CreateCourseOutcomeDto) {
+    return this.courseOutcomesService.create(dto);
   }
 
   @Patch(':id')

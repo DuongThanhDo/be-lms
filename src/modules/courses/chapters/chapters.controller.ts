@@ -9,6 +9,7 @@ import {
   Query,
   HttpStatus,
   HttpException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChaptersService } from './chapters.service';
 import { CreateChapterDto, UpdateChapterDto } from './chapters.dto';
@@ -18,19 +19,19 @@ import { Chapter } from './chapters.entity';
 export class ChaptersController {
   constructor(private readonly chaptersService: ChaptersService) {}
 
-  @Get()
-  async getChaptersWithContent(@Query('content') courseId: number): Promise<any[]> {
-    if (!courseId) {
+  @Get("content/:id")
+  async getChaptersWithContent(@Param('id') id: number): Promise<any[]> {
+    if (!id) {
       throw new HttpException(
         'Vui lòng cung cấp courseId để lấy các chapter!',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.chaptersService.getChaptersWithContent(courseId);
+    return await this.chaptersService.getChaptersWithContent(id);
   }
 
   @Get()
-  async findAll(@Query('courseId') courseId: number): Promise<Chapter[]> {
+  async findAll(@Query('courseId', ParseIntPipe) courseId: number): Promise<Chapter[]> {
     if (!courseId) {
       throw new HttpException(
         'Vui lòng cung cấp courseId để lấy các chapter!',
