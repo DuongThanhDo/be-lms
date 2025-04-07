@@ -28,5 +28,5 @@ export class UserProfile {
 
   @OneToOne(() => Media, (media) => media.avatar)
   @JoinColumn({ name: 'avatar' })
-  avatar: Media;
+  avatar: Media | null;
 }

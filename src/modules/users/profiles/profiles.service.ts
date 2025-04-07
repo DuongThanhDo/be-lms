@@ -16,7 +16,7 @@ export class ProfilesService {
   async findByUser(userId: number): Promise<UserProfile> {
     const profile = await this.userProfileRepository.findOne({
       where: { user: { id: userId } },
-      relations: ['user'],
+      relations: ['user', 'avatar'],
     });
 
     if (!profile) {
@@ -44,19 +44,21 @@ export class ProfilesService {
       where: { id: id },
       relations: ['avatar'],
     });
-  
+
     if (!profile) {
       throw new NotFoundException('Profile not found');
     }
-  
+
     if (profile.avatar) {
-      await this.mediaService.deleteFile(profile.avatar.id);
+      const avatarId = profile.avatar.id;
+      profile.avatar = null; 
+      await this.userProfileRepository.save(profile);
+      await this.mediaService.deleteFile(avatarId);
     }
-  
+
     const media = await this.mediaService.uploadFile(file);
     profile.avatar = media;
-  
+
     return this.userProfileRepository.save(profile);
   }
-  
 }

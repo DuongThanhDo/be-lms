@@ -13,6 +13,9 @@ import { LecturesModule } from './modules/courses/chapters/lectures/lectures.mod
 import { CentralInformationModule } from './modules/central_information/central-information.module';
 import { RoomModule } from './modules/central_information/rooms/room.module';
 import { MediaModule } from './modules/medias/medias.module';
+import { CategoriesModule } from './modules/central_information/categories/categories.module';
+import { CourseOutcomesModule } from './modules/courses/outcomes/course-outcomes.module';
+import { CourseRequirementsModule } from './modules/courses/requirements/course-requirements.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(databaseConfig),
@@ -21,7 +24,8 @@ import { MediaModule } from './modules/medias/medias.module';
     ProfessionsModule,
     CoursesModule,ChaptersModule, LecturesModule,
     CentralInformationModule,RoomModule,
-    MediaModule
+    MediaModule, CategoriesModule,
+    CourseOutcomesModule, CourseRequirementsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

@@ -3,8 +3,8 @@ import { IsNotEmpty, IsNumber, IsString, IsPositive, IsOptional, Min, IsInt } fr
 
 export class CreateChapterDto {
   @IsNotEmpty()
-  @IsNumber()
-  courseId: number;
+  @IsString()
+  courseId: string;
 
   @IsNotEmpty()
   @IsString()

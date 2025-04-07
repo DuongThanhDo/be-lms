@@ -1,6 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsEnum } from 'class-validator';
-import { CourseType } from 'src/common/constants/enum';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
+import { CourseStatus, CourseType } from 'src/common/constants/enum';
 
 export class CreateCourseDto {
   @IsNotEmpty()
@@ -12,20 +17,53 @@ export class CreateCourseDto {
   name: string;
 
   @IsOptional()
+  @IsEnum(CourseType)
+  type: CourseType;
+
+  @IsOptional()
+  @IsEnum(CourseStatus)
+  status: CourseStatus;
+}
+
+export class UpdateCourseDto {
+  @IsOptional()
   @IsString()
-  description: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
-  category: string;
+  description?: string;
 
   @IsOptional()
+  @IsNumber()
+  category?: number;
+
+  @IsOptional()
+  price?: number;
+
+  @IsOptional()
+  @IsEnum(CourseStatus)
+  status?: CourseStatus;
+}
+
+export class SearchCourseByTearch {
   @IsNotEmpty()
-  price: number;
+  @IsString()
+  teacherId: string;
+
+  @IsOptional()
+  @IsString()
+  searchValue?: string;
+
+  @IsOptional()
+  @IsString()
+  category?: string;
 
   @IsOptional()
   @IsEnum(CourseType)
-  type: CourseType;
-}
+  type?: CourseType;
 
-export class UpdateCourseDto extends PartialType(CreateCourseDto) {}
+  @IsOptional()
+  @IsEnum(CourseStatus)
+  status?: CourseStatus;
+}

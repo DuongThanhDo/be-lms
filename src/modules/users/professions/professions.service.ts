@@ -18,7 +18,7 @@ export class ProfessionsService {
     });
 
     if (!professions || professions.length === 0) {
-      throw new NotFoundException(`Không tìm thấy profession cho user ID ${userId}`);
+      throw new NotFoundException(`Người dùng ${userId} không phải là giáo viên!`);
     }
 
     return professions;
@@ -28,7 +28,7 @@ export class ProfessionsService {
     const profession = await this.professionRepository.findOne({ where: { id } });
 
     if (!profession) {
-      throw new NotFoundException(`Profession với ID ${id} không được tìm thấy`);
+      throw new NotFoundException(`Người dùng ${id} không phải là giáo viên!`);
     }
 
     Object.assign(profession, dto);

@@ -1,31 +1,56 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { User } from '../users/user.entity';
-import { CourseType } from 'src/common/constants/enum';
+import { CourseStatus, CourseType } from 'src/common/constants/enum';
 import { Chapter } from './chapters/chapters.entity';
 import { Media } from '../medias/media.entity';
+import { Category } from '../central_information/categories/category.entity';
+import { CourseOutcome } from './outcomes/course-outcomes.entity';
+import { CourseRequirement } from './requirements/course-requirements.entity';
 
 @Entity('courses')
 export class Course {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.courses, { onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => User, (user) => user.courses, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinColumn({ name: 'teacher_id' })
   teacher: User;
 
   @OneToMany(() => Chapter, (chapter) => chapter.course, { cascade: true })
   chapters: Chapter[];
 
+  @OneToMany(() => CourseOutcome, (c) => c.course, { cascade: true })
+  outcomes: CourseOutcome[];
+
+  @OneToMany(() => CourseRequirement, (c) => c.course, { cascade: true })
+  requirements: CourseRequirement[];
+
+
   @Column({ length: 255 })
   name: string;
 
-  @Column('text')
+  @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ length: 255 })
-  category: string;
+  @ManyToOne(() => Category, (category) => category.courses, {
+    onDelete: 'SET NULL',
+    eager: true,
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   price: number;
 
   @Column({ type: 'enum', enum: CourseType })
@@ -33,11 +58,22 @@ export class Course {
 
   @OneToOne(() => Media, (media) => media.course)
   @JoinColumn({ name: 'image' })
-  image: Media;
+  image: Media | null;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', update: false })
+  @Column({ type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT })
+  status: CourseStatus;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    update: false,
+  })
   created_at: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updated_at: Date;
 }

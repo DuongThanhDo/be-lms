@@ -1,10 +1,20 @@
+import { Chapter } from './chapters/chapters.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateCourseDto, UpdateCourseDto } from './courses.dto';
+import {
+  CreateCourseDto,
+  SearchCourseByTearch,
+  UpdateCourseDto,
+} from './courses.dto';
 import { Course } from './courses.entity';
 import { User } from '../users/user.entity';
 import { MediaService } from '../medias/medias.service';
+import { Category } from '../central_information/categories/category.entity';
+import { ChaptersService } from './chapters/chapters.service';
+import { CourseOutcomesService } from './outcomes/course-outcomes.service';
+import { CourseRequirementsService } from './requirements/course-requirements.service';
+import { CourseType } from 'src/common/constants/enum';
 
 @Injectable()
 export class CoursesService {
@@ -13,42 +23,123 @@ export class CoursesService {
     private courseRepository: Repository<Course>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly mediaService: MediaService
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+    private readonly mediaService: MediaService,
+    private readonly chapterService: ChaptersService,
+    private readonly outcomeService: CourseOutcomesService,
+    private readonly requirementService: CourseRequirementsService,
   ) {}
 
   async findAll(): Promise<Course[]> {
     return this.courseRepository.find();
   }
-
+  
   async findOne(id: number): Promise<Course> {
-    const course = await this.courseRepository.findOne({ where: { id } });
+    const course = await this.courseRepository.findOne({
+      where: { id },
+      relations: ['category', 'image'],
+    });
+
     if (!course) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
+
     return course;
   }
 
-  async create(dto: CreateCourseDto): Promise<Course> {
-    const teacher = await this.userRepository.findOne({ where: { id: dto.teacherId } });
+  async findAllByTeacher(dto: SearchCourseByTearch): Promise<any[]> {
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.image', 'image')
+      .where('course.teacher_id = :teacherId', { teacherId: dto.teacherId })
+      .orderBy('course.updated_at', 'DESC');
+
+    if (dto.searchValue) {
+      queryBuilder.andWhere(
+        '(course.name LIKE :search OR course.description LIKE :search)',
+        { search: `%${dto.searchValue}%` },
+      );
+    }
+
+    if (dto.category) {
+      queryBuilder.andWhere('course.category_id = :category', {
+        category: dto.category,
+      });
+    }
+
+    if (dto.type) {
+      queryBuilder.andWhere('course.type = :type', { type: dto.type });
+    }
+
+    if (dto.status) {
+      queryBuilder.andWhere('course.status = :status', { status: dto.status });
+    }
+
+    const courses = await queryBuilder.getMany();
+
+    return courses.map((course) => ({
+      id: course.id,
+      teacherId: course.teacher?.id,
+      name: course.name,
+      description: course.description,
+      category: course.category?.name,
+      price: course.price,
+      type: course.type,
+      image: course.image,
+      status: course.status,
+      created_at: course.created_at,
+      updated_at: course.updated_at,
+    }));
+  }
+
+  async findAllInfoCourse(courseId: number): Promise<any> {
+    const [course, outcomes, requirements] = await Promise.all([
+      this.findOne(courseId),
+      this.outcomeService.findAll(courseId),
+      this.requirementService.findAll(courseId)
+    ]);
+  
+    let contents: any[] = [];
+    if (course.type === CourseType.ONLINE) {
+      contents = await this.chapterService.getChaptersWithContent(courseId);
+    }
+  
+    return {
+      course,
+      outcomes,
+      requirements,
+      contents,
+    };
+  }
+  
+
+  async create(dto: CreateCourseDto): Promise<number> {
+    const teacher = await this.userRepository.findOne({
+      where: { id: dto.teacherId },
+    });
     if (!teacher) {
       throw new NotFoundException(`Teacher with ID ${dto.teacherId} not found`);
     }
 
     const newCourse = this.courseRepository.create({
       name: dto.name,
-      description: dto.description,
-      category: dto.category,
-      price: dto.price,
       type: dto.type,
+      status: dto.status,
       teacher,
     });
 
-    return this.courseRepository.save(newCourse);
+    const course = await this.courseRepository.save(newCourse);
+    return course.id;
   }
 
   async update(id: number, dto: UpdateCourseDto): Promise<Course> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: dto.category },
+    });
     const course = await this.findOne(id);
-    Object.assign(course, dto);
+    Object.assign(course, { ...dto, category });
     return this.courseRepository.save(course);
   }
 
@@ -63,7 +154,10 @@ export class CoursesService {
     }
 
     if (course.image) {
-      await this.mediaService.deleteFile(course.image.id);
+      const imageId = course.image.id;
+      course.image = null;
+      await this.courseRepository.save(course);
+      await this.mediaService.deleteFile(imageId);
     }
 
     const media = await this.mediaService.uploadFile(file);
