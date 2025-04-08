@@ -16,3 +16,10 @@ export enum CourseStatus {
   HIDDEN = 'hidden',
   REJECTED = 'rejected',
 }
+
+export enum CommentableType {
+  LECTURE = 'lecture',
+  CODE = 'code',
+  QUIZ = 'quiz',
+  COMMENT = 'comment'
+}
