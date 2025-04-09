@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import {
   CreateCourseDto,
   SearchCourseByTearch,
+  SearchCourseForStudent,
   UpdateCourseDto,
 } from './courses.dto';
 import { Course } from './courses.entity';
@@ -14,7 +15,7 @@ import { Category } from '../central_information/categories/category.entity';
 import { ChaptersService } from './chapters/chapters.service';
 import { CourseOutcomesService } from './outcomes/course-outcomes.service';
 import { CourseRequirementsService } from './requirements/course-requirements.service';
-import { CourseType } from 'src/common/constants/enum';
+import { CourseStatus, CourseType } from 'src/common/constants/enum';
 
 @Injectable()
 export class CoursesService {
@@ -34,7 +35,7 @@ export class CoursesService {
   async findAll(): Promise<Course[]> {
     return this.courseRepository.find();
   }
-  
+
   async findOne(id: number): Promise<Course> {
     const course = await this.courseRepository.findOne({
       where: { id },
@@ -94,18 +95,82 @@ export class CoursesService {
     }));
   }
 
+  async findAllForStudent(
+    dto: SearchCourseForStudent,
+  ): Promise<{ data: any[]; total: number }> {
+    const { searchValue, category, type, sort, page = 1, limit = 12 } = dto;
+
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.image', 'image')
+      .leftJoinAndSelect('course.teacher', 'teacher')
+      // .where('course.status = :status', { status: CourseStatus.PUBLISHED });
+
+    if (searchValue) {
+      queryBuilder.andWhere(
+        '(course.name LIKE :search OR course.description LIKE :search)',
+        { search: `%${searchValue}%` },
+      );
+    }
+
+    if (category) {
+      queryBuilder.andWhere('course.category_id = :category', { category });
+    }
+
+    if (type) {
+      queryBuilder.andWhere('course.type = :type', { type });
+    }
+
+    switch (sort) {
+      case 'newest':
+        queryBuilder.orderBy('course.created_at', 'DESC');
+        break;
+      case 'priceLow':
+        queryBuilder.orderBy('course.price', 'ASC');
+        break;
+      case 'priceHigh':
+        queryBuilder.orderBy('course.price', 'DESC');
+        break;
+      default:
+        queryBuilder.orderBy('course.updated_at', 'DESC');
+        break;
+    }
+
+    const total = await queryBuilder.getCount();
+
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const courses = await queryBuilder.getMany();
+
+    const data = courses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      category: course.category?.name,
+      type: course.type,
+      image: course.image,
+      price: course.price,
+      teacherName: course.teacher,
+      created_at: course.created_at,
+      updated_at: course.updated_at,
+    }));
+
+    return { data, total };
+  }
+
   async findAllInfoCourse(courseId: number): Promise<any> {
     const [course, outcomes, requirements] = await Promise.all([
       this.findOne(courseId),
       this.outcomeService.findAll(courseId),
-      this.requirementService.findAll(courseId)
+      this.requirementService.findAll(courseId),
     ]);
-  
+
     let contents: any[] = [];
     if (course.type === CourseType.ONLINE) {
       contents = await this.chapterService.getChaptersWithContent(courseId);
     }
-  
+
     return {
       course,
       outcomes,
@@ -113,7 +178,6 @@ export class CoursesService {
       contents,
     };
   }
-  
 
   async create(dto: CreateCourseDto): Promise<number> {
     const teacher = await this.userRepository.findOne({

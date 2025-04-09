@@ -23,6 +23,7 @@ export class MediaService {
           file_type: result.resource_type,
           cloud_id: result.public_id,
           service: 'cloudinary',
+          duration: result.duration,
         });
 
         await this.mediaRepository.save(media);
