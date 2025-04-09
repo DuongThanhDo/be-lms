@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -66,4 +67,32 @@ export class SearchCourseByTearch {
   @IsOptional()
   @IsEnum(CourseStatus)
   status?: CourseStatus;
+}
+
+export class SearchCourseForStudent {
+  @IsOptional()
+  @IsString()
+  searchValue?: string;
+
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsEnum(CourseType)
+  type?: CourseType;
+
+  @IsOptional()
+  @IsString()
+  sort?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  limit?: number;
 }

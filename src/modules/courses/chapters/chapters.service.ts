@@ -29,28 +29,32 @@ export class ChaptersService {
       where: { id },
       relations: ['course'],
     });
-    if (!chapter) throw new NotFoundException(`Chapter with ID ${id} not found`);
+    if (!chapter)
+      throw new NotFoundException(`Chapter with ID ${id} not found`);
     return chapter;
   }
 
   async create(dto: CreateChapterDto): Promise<Chapter> {
-    const course = await this.courseRepository.findOne({ where: { id: Number(dto.courseId) } });
-    if (!course) throw new NotFoundException(`Course with ID ${dto.courseId} not found`);
-  
+    const course = await this.courseRepository.findOne({
+      where: { id: Number(dto.courseId) },
+    });
+    if (!course)
+      throw new NotFoundException(`Course with ID ${dto.courseId} not found`);
+
     const maxOrder = await this.chapterRepository
       .createQueryBuilder('chapter')
       .select('MAX(chapter.order)', 'max')
       .where('chapter.course = :courseId', { courseId: dto.courseId })
       .getRawOne();
-  
+
     const newOrder = (maxOrder?.max ?? 0) + 1;
-  
+
     const newChapter = this.chapterRepository.create({
       ...dto,
       course,
       order: newOrder,
     });
-  
+
     return await this.chapterRepository.save(newChapter);
   }
 
@@ -67,41 +71,66 @@ export class ChaptersService {
     }
   }
 
+  async getTotalDurationForChapter(chapterId: number): Promise<number> {
+    const [lectures] = await Promise.all([
+      // const [lectures, exercises, quizzes] = await Promise.all([
+      this.lectureRepository.find({ where: { chapter: { id: chapterId } } }),
+      // this.codeExerciseRepository.find({ where: { chapter: { id: chapterId } } }),
+      // this.quizRepository.find({ where: { chapter: { id: chapterId } } }),
+    ]);
+
+    const totalLectureDuration = lectures.reduce(
+      (sum, l) => sum + (l.duration || 0),
+      0,
+    );
+    // const totalExerciseDuration = exercises.reduce((sum, e) => sum + (e.duration || 0), 0);
+    // const totalQuizDuration = quizzes.reduce((sum, q) => sum + (q.duration || 0), 0);
+
+    return totalLectureDuration;
+    // return totalLectureDuration + totalExerciseDuration + totalQuizDuration;
+  }
+
   async getChaptersWithContent(courseId: number): Promise<any[]> {
     const chapters = await this.chapterRepository.find({
       where: { course: { id: courseId } },
       relations: ['lectures', 'lectures.video'],
-    //   relations: ['lectures', 'quizzes'],
+      //   relations: ['lectures', 'quizzes'],
       order: { order: 'ASC' },
     });
-    
+
+    const chaptersWithContent = await Promise.all(
+      chapters.map(async (chapter) => {
+        const lectures = chapter.lectures
+          ? chapter.lectures.map((lecture) => ({
+              type: 'lecture',
+              id: lecture.id,
+              title: lecture.title,
+              video: lecture.video ?? null,
+              order: lecture.order,
+              description: lecture.description,
+              duration: lecture.duration,
+            }))
+          : [];
+
+                //   const quizzes = chapter.quizzes ? chapter.quizzes.map((quiz) => ({
+      //     type: 'quiz',
+      //     id: quiz.id,
+      //     title: quiz.title,
+      //     order: quiz.order,
+      //   })) : [];
   
-    return chapters.map((chapter) => {
-      const lectures = chapter.lectures
-        ? chapter.lectures.map((lecture) => ({
-            type: 'lecture',
-            id: lecture.id,
-            title: lecture.title,
-            video: lecture.video ? lecture.video : null,
-            order: lecture.order,
-            description: lecture.description,
-          }))
-        : [];
+        const durationChapter = await this.getTotalDurationForChapter(chapter.id);
   
-    //   const quizzes = chapter.quizzes ? chapter.quizzes.map((quiz) => ({
-    //     type: 'quiz',
-    //     id: quiz.id,
-    //     title: quiz.title,
-    //     order: quiz.order,
-    //   })) : [];
+        return {
+          id: chapter.id,
+          title: chapter.title,
+          duration: durationChapter,
+          // items: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
+          items: lectures.sort((a, b) => a.order - b.order),
+        };
+      })
+    );
   
-      return {
-        id: chapter.id,
-        title: chapter.title,
-        // content: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
-        items: [...lectures].sort((a, b) => a.order - b.order),
-      };
-    });
+    return chaptersWithContent;
   }
-  
 }

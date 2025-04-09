@@ -29,6 +29,9 @@ export class Lecture {
   @Column({ type: 'int' })
   order: number;
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  duration: number;
+
   @Column({ type: 'text', nullable: true })
   description?: string;
 }

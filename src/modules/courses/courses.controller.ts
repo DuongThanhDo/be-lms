@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseDto, SearchCourseByTearch, UpdateCourseDto } from './courses.dto';
+import { CreateCourseDto, SearchCourseByTearch, SearchCourseForStudent, UpdateCourseDto } from './courses.dto';
 import { Course } from './courses.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -27,6 +27,11 @@ export class CoursesController {
   @Get('teacher')
   findAllByTeacher(@Query() dto: SearchCourseByTearch): Promise<any[]> {
     return this.coursesService.findAllByTeacher(dto);
+  }
+
+  @Get('student')
+  findAllForStudent(@Query() dto: SearchCourseForStudent): Promise<{ data: any[]; total: number }> {
+    return this.coursesService.findAllForStudent(dto);
   }
 
   @Get('all-info/:id')

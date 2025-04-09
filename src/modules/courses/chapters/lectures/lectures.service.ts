@@ -13,7 +13,7 @@ export class LecturesService {
     private lectureRepository: Repository<Lecture>,
     @InjectRepository(Chapter)
     private chapterRepository: Repository<Chapter>,
-        private readonly mediaService: MediaService
+    private readonly mediaService: MediaService,
   ) {}
 
   async findAll(chapterId: number): Promise<Lecture[]> {
@@ -25,13 +25,19 @@ export class LecturesService {
   }
 
   async findOne(id: number): Promise<Lecture> {
-    const lecture = await this.lectureRepository.findOne({ where: { id }, relations: ['video'] });
-    if (!lecture) throw new NotFoundException(`Lecture with ID ${id} not found`);
+    const lecture = await this.lectureRepository.findOne({
+      where: { id },
+      relations: ['video'],
+    });
+    if (!lecture)
+      throw new NotFoundException(`Lecture with ID ${id} not found`);
     return lecture;
   }
 
   async create(dto: CreateLectureDto): Promise<Lecture> {
-    const chapter = await this.chapterRepository.findOne({ where: { id: dto.chapterId } });
+    const chapter = await this.chapterRepository.findOne({
+      where: { id: dto.chapterId },
+    });
     if (!chapter) throw new NotFoundException('Chapter không tồn tại');
 
     const newLecture = this.lectureRepository.create({
@@ -52,11 +58,11 @@ export class LecturesService {
       where: { id },
       relations: ['video'],
     });
-  
+
     if (!lecture) {
       throw new NotFoundException('Lecture not found');
     }
-  
+
     if (lecture.video) {
       const videoId = lecture.video.id;
       lecture.video = null;
@@ -64,13 +70,14 @@ export class LecturesService {
 
       await this.mediaService.deleteFile(videoId);
     }
-  
+
     const media = await this.mediaService.uploadFile(file);
     lecture.video = media;
-  
+
+    lecture.duration = Math.floor(media.duration);
+
     return this.lectureRepository.save(lecture);
   }
-  
 
   async remove(id: number): Promise<void> {
     const result = await this.lectureRepository.delete(id);
