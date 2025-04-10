@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   CreateCourseDto,
+  FindTopCoursesByCondition,
   SearchCourseByTearch,
   SearchCourseForStudent,
   UpdateCourseDto,
@@ -105,7 +106,8 @@ export class CoursesService {
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.image', 'image')
       .leftJoinAndSelect('course.teacher', 'teacher')
-      // .where('course.status = :status', { status: CourseStatus.PUBLISHED });
+      .leftJoinAndSelect('teacher.profile', 'profile')
+    // .where('course.status = :status', { status: CourseStatus.PUBLISHED });
 
     if (searchValue) {
       queryBuilder.andWhere(
@@ -151,7 +153,7 @@ export class CoursesService {
       type: course.type,
       image: course.image,
       price: course.price,
-      teacherName: course.teacher,
+      teacher: course.teacher,
       created_at: course.created_at,
       updated_at: course.updated_at,
     }));
@@ -235,5 +237,49 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
     return true;
+  }
+
+  async findTopCoursesByCondition(
+    dto: FindTopCoursesByCondition,
+  ): Promise<any[]> {
+    const { category, teacherId, isFree, limit = 4 } = dto;
+
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.image', 'image')
+      .leftJoinAndSelect('course.teacher', 'teacher')
+      .leftJoinAndSelect('teacher.profile', 'profile')
+      // .where('course.status = :status', { status: 'published' })
+      .orderBy('course.updated_at', 'DESC')
+      .limit(limit);
+
+    if (category) {
+      queryBuilder.andWhere('course.category_id = :category', { category });
+    }
+
+    if (teacherId) {
+      queryBuilder.andWhere('course.teacher_id = :teacherId', { teacherId });
+    }
+
+    if (isFree) {
+      queryBuilder.andWhere('course.price = 0');
+    }
+
+    const courses = await queryBuilder.getMany();
+
+    return courses.map((course) => ({
+      id: course.id,
+      teacher: course.teacher,
+      name: course.name,
+      description: course.description,
+      category: course.category?.name,
+      price: course.price,
+      type: course.type,
+      image: course.image,
+      status: course.status,
+      created_at: course.created_at,
+      updated_at: course.updated_at,
+    }));
   }
 }

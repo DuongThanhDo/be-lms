@@ -6,9 +6,11 @@ import {
     Param,
     Delete,
     Patch,
+    Query,
   } from '@nestjs/common';
   import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './category.dto';
+import { Category } from './category.entity';
   
   @Controller('categories')
   export class CategoriesController {
@@ -17,6 +19,12 @@ import { CreateCategoryDto, UpdateCategoryDto } from './category.dto';
     @Get()
     findAll() {
       return this.categoriesService.findAll();
+    }
+
+    @Get('top')
+    getTopCategories(@Query('limit') limit: string): Promise<Category[]> {
+      const parsedLimit = parseInt(limit, 10) || 8;
+      return this.categoriesService.findTop(parsedLimit);
     }
   
     @Get(':id')
