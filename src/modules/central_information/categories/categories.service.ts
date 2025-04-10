@@ -23,6 +23,15 @@ export class CategoriesService {
     return category;
   }
 
+  async findTop(limit: number): Promise<Category[]> {
+    const categories = await this.categoryRepository.find({
+      order: { id: 'ASC' },
+      take: limit,
+    });
+  
+    return categories;
+  }
+
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const category = this.categoryRepository.create(createCategoryDto);
     return this.categoryRepository.save(category);

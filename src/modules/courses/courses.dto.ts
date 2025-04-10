@@ -96,3 +96,23 @@ export class SearchCourseForStudent {
   @IsNumber()
   limit?: number;
 }
+
+export class FindTopCoursesByCondition {
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  category?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  teacherId?: number;
+
+  @IsOptional()
+  isFree?: boolean;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  limit?: number;
+}
