@@ -9,7 +9,6 @@ export class CommentsController {
 
   @Post()
   create(@Body() dto: CreateCommentDto) {
-    const userId = 1; // TODO: lấy từ auth nếu có
     return this.commentsService.create(dto);
   }
 
