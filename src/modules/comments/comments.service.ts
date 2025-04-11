@@ -38,11 +38,16 @@ export class CommentsService {
       ...dto,
       user_id: user.id,
     });
-    
+
     const saved = await this.commentRepo.save(comment);
     const fullComment = await this.getFullComment(saved.id);
     this.gateway.sendNewComment(fullComment);
-    return fullComment
+    console.log(
+      'Sent comment to socket room:',
+      `${fullComment?.commentable_type}-${fullComment?.commentable_id}`,
+    );
+
+    return fullComment;
   }
 
   findAll() {
@@ -51,7 +56,6 @@ export class CommentsService {
       order: { updated_at: 'DESC' },
     });
   }
-
 
   findByContentTarget(type: CommentableType, id: number) {
     return this.commentRepo.find({

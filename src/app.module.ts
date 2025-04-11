@@ -17,6 +17,7 @@ import { CategoriesModule } from './modules/central_information/categories/categ
 import { CourseOutcomesModule } from './modules/courses/outcomes/course-outcomes.module';
 import { CourseRequirementsModule } from './modules/courses/requirements/course-requirements.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { NoteModule } from './modules/courses/chapters/lectures/notes/notes.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(databaseConfig),
@@ -26,7 +27,7 @@ import { CommentsModule } from './modules/comments/comments.module';
     CoursesModule,ChaptersModule, LecturesModule,
     CentralInformationModule,RoomModule,
     MediaModule, CategoriesModule,
-    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,
+    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],
