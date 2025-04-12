@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserProfile } from './profiles/profiles.entity';
 import { Profession } from './professions/professions.entity';
 import { Course } from '../courses/courses.entity';
+import { MediaModule } from '../medias/medias.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Course } from '../courses/courses.entity';
         secret: 'secret',
         signOptions: { expiresIn: '3600s' },
       }),
-    }),
+    }),MediaModule
   ],
   providers: [UsersService, JwtGuard, JwtStratery],
   controllers: [UsersController],
