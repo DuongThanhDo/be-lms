@@ -9,16 +9,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserProfile } from './profiles/profiles.entity';
 import { Profession } from './professions/professions.entity';
 import { Course } from '../courses/courses.entity';
+import { MediaModule } from '../medias/medias.module';
+import { Media } from '../medias/media.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserProfile, Profession, Course]),
+    TypeOrmModule.forFeature([User, UserProfile, Profession, Course, Media]),
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: 'secret',
         signOptions: { expiresIn: '3600s' },
       }),
-    }),
+    }),MediaModule
   ],
   providers: [UsersService, JwtGuard, JwtStratery],
   controllers: [UsersController],

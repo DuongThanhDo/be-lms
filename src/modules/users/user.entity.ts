@@ -13,9 +13,13 @@ export class User {
   @Column({ unique: true, length: 255 })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
+
+  @Column({ nullable: true, default: false })
+  @Exclude()
+  isLock: boolean;
 
   @Column({
     type: 'enum',

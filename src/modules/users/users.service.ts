@@ -1,4 +1,4 @@
-import { ChangePasswordDto, CreateUserDto, ExistingUserDto } from './user.dto';
+import { ChangePasswordDto, CreateUserDto, ExistingUserDto } from './user.dto'; 
 import {
   BadRequestException,
   ForbiddenException,
@@ -15,6 +15,11 @@ import { UserProfile } from './profiles/profiles.entity';
 import { UserRole } from 'src/common/constants/enum';
 import { Profession } from './professions/professions.entity';
 import { plainToInstance } from 'class-transformer';
+import { OAuth2Client } from 'google-auth-library';
+import { MediaService } from 'src/modules/medias/medias.service';
+import { Media } from '../medias/media.entity';
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 @Injectable()
 export class UsersService {
@@ -22,9 +27,12 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private readonly mediaService: MediaService,
 
     @InjectRepository(UserProfile)
     private userProfileRepository: Repository<UserProfile>,
+    @InjectRepository(Media)
+    private mediaRepository: Repository<Media>,
     @InjectRepository(Profession)
     private professionRepository: Repository<Profession>,
   ) {}
@@ -127,11 +135,70 @@ export class UsersService {
       throw new ForbiddenException(`Bạn không có quyền đăng nhập vào hệ thống này.`);
     }
 
+    if (vUser.isLock) {
+      throw new ForbiddenException(`Tài khoản của bạn đã bị khóa!`);
+    }
+
     const user = plainToInstance(User, vUser);
 
     const jwt = await this.jwtService.signAsync({ user });
 
     return { token: jwt };
+  }
+
+  async loginWithGoogle(token: string) {
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+  
+      const payload = ticket.getPayload();
+      if (!payload) {
+        throw new HttpException('Invalid Google token payload', HttpStatus.BAD_REQUEST);
+      }
+  
+      const email = payload.email || "";
+      const name = payload.name;
+      const avatar = payload.picture;
+  
+      let user = await this.findByEmail(email);
+
+      if (!user) {
+        user = this.userRepository.create({
+          email,
+          password: undefined,
+          role: UserRole.STUDENT,
+        });
+        user = await this.userRepository.save(user);
+
+        let media = this.mediaRepository.create({
+          file_url: avatar,
+          file_type: "google"
+        })
+        media = await this.mediaRepository.save(media);
+
+        const profile = this.userProfileRepository.create({
+          user: user,
+          name: name,
+          avatar: media
+        });
+        await this.userProfileRepository.save(profile);
+      }
+      if (user.isLock) {
+        throw new ForbiddenException(`Tài khoản của bạn đã bị khóa!`);
+      }
+  
+      const jwtPayload = { sub: user.id, email: user.email };
+      const accessToken = this.jwtService.sign(jwtPayload);
+  
+      return { accessToken, user };
+    } catch (error) {
+      throw new HttpException(
+        `Google login failed: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async changePassword(changeDto: ChangePasswordDto): Promise<any> {
@@ -149,5 +216,4 @@ export class UsersService {
   
     return { message: 'Mật khẩu đã được thay đổi thành công!' };
   }
-  
 }

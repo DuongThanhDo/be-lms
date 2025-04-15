@@ -49,7 +49,7 @@ export class ProfilesService {
       throw new NotFoundException('Profile not found');
     }
 
-    if (profile.avatar) {
+    if (profile.avatar && profile.avatar.file_type != "google") {
       const avatarId = profile.avatar.id;
       profile.avatar = null; 
       await this.userProfileRepository.save(profile);
