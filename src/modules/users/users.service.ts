@@ -17,6 +17,7 @@ import { Profession } from './professions/professions.entity';
 import { plainToInstance } from 'class-transformer';
 import { OAuth2Client } from 'google-auth-library';
 import { MediaService } from 'src/modules/medias/medias.service';
+import { Media } from '../medias/media.entity';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -30,6 +31,8 @@ export class UsersService {
 
     @InjectRepository(UserProfile)
     private userProfileRepository: Repository<UserProfile>,
+    @InjectRepository(Media)
+    private mediaRepository: Repository<Media>,
     @InjectRepository(Profession)
     private professionRepository: Repository<Profession>,
   ) {}
@@ -132,6 +135,10 @@ export class UsersService {
       throw new ForbiddenException(`Bạn không có quyền đăng nhập vào hệ thống này.`);
     }
 
+    if (vUser.isLock) {
+      throw new ForbiddenException(`Tài khoản của bạn đã bị khóa!`);
+    }
+
     const user = plainToInstance(User, vUser);
 
     const jwt = await this.jwtService.signAsync({ user });
@@ -156,6 +163,7 @@ export class UsersService {
       const avatar = payload.picture;
   
       let user = await this.findByEmail(email);
+
       if (!user) {
         user = this.userRepository.create({
           email,
@@ -163,11 +171,22 @@ export class UsersService {
           role: UserRole.STUDENT,
         });
         user = await this.userRepository.save(user);
+
+        let media = this.mediaRepository.create({
+          file_url: avatar,
+          file_type: "google"
+        })
+        media = await this.mediaRepository.save(media);
+
         const profile = this.userProfileRepository.create({
           user: user,
           name: name,
+          avatar: media
         });
         await this.userProfileRepository.save(profile);
+      }
+      if (user.isLock) {
+        throw new ForbiddenException(`Tài khoản của bạn đã bị khóa!`);
       }
   
       const jwtPayload = { sub: user.id, email: user.email };

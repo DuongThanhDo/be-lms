@@ -14,7 +14,7 @@ export class Media {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   file_name: string;
 
   @Column({ nullable: true })

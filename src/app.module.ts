@@ -18,6 +18,7 @@ import { CourseOutcomesModule } from './modules/courses/outcomes/course-outcomes
 import { CourseRequirementsModule } from './modules/courses/requirements/course-requirements.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { NoteModule } from './modules/courses/chapters/lectures/notes/notes.module';
+import { FirebaseModule } from './modules/firebase/firebase.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(databaseConfig),
@@ -27,7 +28,7 @@ import { NoteModule } from './modules/courses/chapters/lectures/notes/notes.modu
     CoursesModule,ChaptersModule, LecturesModule,
     CentralInformationModule,RoomModule,
     MediaModule, CategoriesModule,
-    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule
+    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule, FirebaseModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],
