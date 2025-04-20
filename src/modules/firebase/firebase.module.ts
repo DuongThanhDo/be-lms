@@ -29,7 +29,7 @@ import { QuizService } from './services/quiz.service';
                 const firebaseAdminConfig = JSON.parse(process.env.FIREBASE_ADMIN_SDK_JSON!);
                 admin.initializeApp({
                     credential: admin.credential.cert(firebaseAdminConfig),
-                    databaseURL: "https://project-quiz-c13d2.firebaseio.com"
+                    databaseURL: "https://lms-quiz-be695.firebaseio.com"
                 });
                 return admin.firestore();
             },
@@ -59,6 +59,6 @@ import { QuizService } from './services/quiz.service';
             }
         }
     ],
-    exports: [],
+    exports: [QuizService],
 })
 export class FirebaseModule { }

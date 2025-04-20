@@ -3,6 +3,7 @@ import { Firestore } from 'firebase-admin/firestore';
 import * as fireorm from 'fireorm';
 import { Quiz } from '../collections/quiz.collection';
 import { QuizMapper } from '../mappers/quiz.mapper';
+import { log } from 'console';
 
 @Injectable()
 export class QuizService {
@@ -19,6 +20,8 @@ export class QuizService {
     try {
       const { id, body } = data;
 
+      console.log(body);
+
       const documents = {
         id,
         ...QuizMapper.toQuizMapper({
@@ -27,9 +30,12 @@ export class QuizService {
       };
 
       this.quiz = documents;
+      console.log('Them quiz' + documents);
 
       const quizRepository = fireorm.getRepository(Quiz);
-      await quizRepository.create(this.quiz);
+      const newQuiz = await quizRepository.create(this.quiz);
+      console.log('new quiz' + newQuiz + 'repon' + quizRepository);
+      return newQuiz.id;
     } catch (error: any) {
       console.error();
     }
@@ -102,7 +108,7 @@ export class QuizService {
             document.id,
             subCollection.id,
             path + id + '/',
-            {}
+            {},
           );
           subCollectionData[document.id] = subDocData[subCollection.id];
         }
@@ -116,7 +122,6 @@ export class QuizService {
       throw error;
     }
   }
-
 
   async all() {
     try {
@@ -173,7 +178,7 @@ export class QuizService {
       let quiz: Quiz = await quizRepository.findById(id);
       return {
         id: quiz.id,
-        name: quiz.name
+        name: quiz.name,
       };
     } catch (error: any) {
       throw error;

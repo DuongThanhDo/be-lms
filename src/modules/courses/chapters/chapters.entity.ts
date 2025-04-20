@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Course } from '../courses.entity';
 import { Lecture } from './lectures/lectures.entity';
+import { QuizSQL } from './quizSQL/quizSQL.entity';
 
 
 @Entity('chapters')
@@ -19,4 +20,7 @@ export class Chapter {
 
   @OneToMany(() => Lecture, (lecture) => lecture.chapter, { cascade: true })
   lectures: Lecture[];
+
+  @OneToMany(() => QuizSQL, (quiz) => quiz.chapter, { cascade: true })
+  quizzes: QuizSQL[];
 }

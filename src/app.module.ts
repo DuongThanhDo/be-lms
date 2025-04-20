@@ -19,6 +19,7 @@ import { CourseRequirementsModule } from './modules/courses/requirements/course-
 import { CommentsModule } from './modules/comments/comments.module';
 import { NoteModule } from './modules/courses/chapters/lectures/notes/notes.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
+import { QuizSQLModule } from './modules/courses/chapters/quizSQL/quizSQL.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(databaseConfig),
@@ -28,7 +29,7 @@ import { FirebaseModule } from './modules/firebase/firebase.module';
     CoursesModule,ChaptersModule, LecturesModule,
     CentralInformationModule,RoomModule,
     MediaModule, CategoriesModule,
-    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule, FirebaseModule
+    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule, FirebaseModule, QuizSQLModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

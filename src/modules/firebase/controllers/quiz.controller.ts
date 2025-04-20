@@ -13,8 +13,10 @@ import {
   import { Request, Response } from 'express';
 import { QuizService } from '../services/quiz.service';
 import { Quiz } from '../collections/quiz.collection';
+import { QuizDTO } from '../dtos/quiz.dto';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
   
-  @Controller('quizzs')
+  @Controller('quizzes')
   export class QuizController {
     constructor(private quizService: QuizService) {}
   
@@ -26,12 +28,13 @@ import { Quiz } from '../collections/quiz.collection';
      */
     @Post('')
     async create(
-      @Req() req: Request,
       @Res() res: Response,
-      @Body() body: Quiz,
+      @Body() body: QuizDTO,
     ) {
       try {
-        const { id } = body;
+        const id = UUID;
+
+        console.log('Body:', body);
         await this.quizService.createQuiz({
           id,
           body,
@@ -82,7 +85,7 @@ import { Quiz } from '../collections/quiz.collection';
       }
     }
   
-    @Get(':id/detail')
+    @Get('detail/:id')
     async getOne(@Param('id') id: string, @Res() res: Response) {
       try {
         const cateData = await this.quizService.getOne(id);

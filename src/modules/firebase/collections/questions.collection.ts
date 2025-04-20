@@ -4,7 +4,7 @@ import { Answer } from './answers.collection';
 import { AnswerCorrect } from './answer_correct.collection';
 
 @Injectable()
-// @Collection('question')
+// @Collection('questions')
 export class Question {
     id: string;
     name: string;

@@ -17,6 +17,7 @@ import {
   import { Request, Response } from 'express';
 import { QuestionService } from '../services/question.service';
 import { Question } from '../collections/questions.collection';
+import { QuestionDto } from '../dtos/question.dto';
 
   
   @Controller('questions')
@@ -32,7 +33,7 @@ import { Question } from '../collections/questions.collection';
     @Post('')
     async create(
       @Res() res: Response,
-      @Body() body: Question,
+      @Body() body: QuestionDto,
     ) {
       try {
         const { id } = body;
@@ -48,8 +49,8 @@ import { Question } from '../collections/questions.collection';
       }
     }
   
-    @Get('quiz/:id/questions')
-    async get(@Param('id') id: string, @Res() res: Response) {
+    @Get('quizzes/:quizId/questions')
+    async get(@Param('quizId') id: string, @Res() res: Response) {
       try {
         const result = await this.questionService.all(id);
   
@@ -61,7 +62,7 @@ import { Question } from '../collections/questions.collection';
       }
     }
   
-    @Get('quizzes/:cateId/questions/:quesId/answer')
+    @Get('quizzes/:quizId/questions/:quesId/answer')
     async getAnswer(
       @Param('cateId') cateId: string,
       @Param('quesId') quesId: string,
@@ -78,29 +79,29 @@ import { Question } from '../collections/questions.collection';
       }
     }
   
-    @Delete('quiz/:quiz_id/question/:question_id')
+    @Delete('quizzes/:quizId/questions/:question_id')
     async delete(
-      @Param('quiz_id') quiz_id: string,
+      @Param('quizId') quizId: string,
       @Param('question_id') question_id: string,
       @Res() res: Response,
     ) {
       try {
-        await this.questionService.remove(quiz_id, question_id);
+        await this.questionService.remove(quizId, question_id);
         return res.status(200).send('Remove collection successfull !');
       } catch (error) {
         return res.status(500).send('An error occurred');
       }
     }
   
-    @Put('quiz/:quiz_id/question/:question_id')
+    @Put('quizzes/:quizId/question/:question_id')
     async update(
-      @Param('quiz_id') quiz_id: string,
+      @Param('quizId') quizId: string,
       @Param('question_id') question_id: string,
       @Body() body: Question,
       @Res() res: Response,
     ) {
       try {
-        await this.questionService.update(quiz_id, question_id, body);
+        await this.questionService.update(quizId, question_id, body);
         return res.status(200).send('Update collection successfull !');
       } catch (error: any) {
         return res.status(500).send('An error occurred');

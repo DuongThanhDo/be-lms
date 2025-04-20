@@ -5,6 +5,7 @@ import { Chapter } from './chapters.entity';
 import { CreateChapterDto, UpdateChapterDto } from './chapters.dto';
 import { Course } from '../courses.entity';
 import { Lecture } from './lectures/lectures.entity';
+import { QuizSQL } from './quizSQL/quizSQL.entity';
 
 @Injectable()
 export class ChaptersService {
@@ -15,6 +16,8 @@ export class ChaptersService {
     private courseRepository: Repository<Course>,
     @InjectRepository(Lecture)
     private lectureRepository: Repository<Lecture>,
+    @InjectRepository(QuizSQL)
+    private quizRepository: Repository<QuizSQL>,
   ) {}
 
   async findAll(courseId: number): Promise<Chapter[]> {
@@ -72,11 +75,11 @@ export class ChaptersService {
   }
 
   async getTotalDurationForChapter(chapterId: number): Promise<number> {
-    const [lectures] = await Promise.all([
+    const [lectures, quizzes] = await Promise.all([
       // const [lectures, exercises, quizzes] = await Promise.all([
       this.lectureRepository.find({ where: { chapter: { id: chapterId } } }),
       // this.codeExerciseRepository.find({ where: { chapter: { id: chapterId } } }),
-      // this.quizRepository.find({ where: { chapter: { id: chapterId } } }),
+      this.quizRepository.find({ where: { chapter: { id: chapterId } } }),
     ]);
 
     const totalLectureDuration = lectures.reduce(
@@ -84,16 +87,16 @@ export class ChaptersService {
       0,
     );
     // const totalExerciseDuration = exercises.reduce((sum, e) => sum + (e.duration || 0), 0);
-    // const totalQuizDuration = quizzes.reduce((sum, q) => sum + (q.duration || 0), 0);
+    const totalQuizDuration = quizzes.reduce((sum, q) => sum + 60, 0);
 
-    return totalLectureDuration;
+    return totalLectureDuration + totalQuizDuration;
     // return totalLectureDuration + totalExerciseDuration + totalQuizDuration;
   }
 
   async getChaptersWithContent(courseId: number): Promise<any[]> {
     const chapters = await this.chapterRepository.find({
       where: { course: { id: courseId } },
-      relations: ['lectures', 'lectures.video'],
+      relations: ['lectures', 'lectures.video', 'quizzes'],
       //   relations: ['lectures', 'quizzes'],
       order: { order: 'ASC' },
     });
@@ -112,25 +115,29 @@ export class ChaptersService {
             }))
           : [];
 
-                //   const quizzes = chapter.quizzes ? chapter.quizzes.map((quiz) => ({
-      //     type: 'quiz',
-      //     id: quiz.id,
-      //     title: quiz.title,
-      //     order: quiz.order,
-      //   })) : [];
-  
-        const durationChapter = await this.getTotalDurationForChapter(chapter.id);
-  
+        const quizzes = chapter.quizzes
+          ? chapter.quizzes.map((quiz) => ({
+              type: 'quiz',
+              id: quiz.id,
+              title: quiz.name,
+              order: quiz.order,
+            }))
+          : [];
+
+        const durationChapter = await this.getTotalDurationForChapter(
+          chapter.id,
+        );
+
         return {
           id: chapter.id,
           title: chapter.title,
           duration: durationChapter,
-          // items: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
-          items: lectures.sort((a, b) => a.order - b.order),
+          items: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
+          // items: lectures.sort((a, b) => a.order - b.order),
         };
-      })
+      }),
     );
-  
+
     return chaptersWithContent;
   }
 }
