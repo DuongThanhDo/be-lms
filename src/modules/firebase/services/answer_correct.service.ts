@@ -29,7 +29,7 @@ export class AnswerCorrectService {
 
       const doc = this.firestore
         .collection(
-          `quizzs/${body.quiz_id}/Questions/${documents.question_id}/Answers`,
+          `quizzes/${body.quiz_id}/Questions/${body.question_id}/Answers`,
         )
         .doc(documents.id);
 
@@ -48,7 +48,7 @@ export class AnswerCorrectService {
   ): Promise<boolean> {
     try {
       const collection = this.firestore.collection(
-        `quizzs/${quiz_id}/Questions/${question_id}/Answers`,
+        `quizzes/${quiz_id}/Questions/${question_id}/Answers`,
       );
       await collection.doc(answer_id).delete();
       return true;
@@ -67,7 +67,7 @@ export class AnswerCorrectService {
     try {
       const docRef = this.firestore
         .collection(
-          `quizzs/${quiz_id}/Questions/${question_id}/Answers`,
+          `quizzes/${quiz_id}/Questions/${question_id}/Answers`,
         )
         .doc(answer_id);
       await docRef.update(updateData);

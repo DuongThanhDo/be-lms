@@ -21,7 +21,7 @@ export class QuestionService {
 
   async createQuestion(data: any) {
     try {
-      const { id, body } = data;
+      const { quizId, body } = data;
 
       const documents = {
         id: uuidv4(),
@@ -30,12 +30,12 @@ export class QuestionService {
         }),
       };
 
-      if (id) {
+      if (quizId) {
         const quizRepository = fireorm.getRepository(Quiz);
-        const quizFindById = await quizRepository.findById(id);
+        const quizFindById = await quizRepository.findById(quizId);
 
         if (!quizFindById) {
-          throw new Error(`quiz with id ${id} not found`);
+          throw new Error(`quiz with id ${quizId} not found`);
         }
 
         const questions = quizFindById.questions;
@@ -56,7 +56,7 @@ export class QuestionService {
   async remove(quiz_id: string, question_id: string) {
     try {
       const collection = this.firestore.collection(
-        `quizzs/${quiz_id}/Questions`,
+        `quizzes/${quiz_id}/Questions`,
       );
       collection.doc(question_id).delete();
 

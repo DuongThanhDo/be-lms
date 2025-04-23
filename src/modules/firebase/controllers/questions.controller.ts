@@ -17,10 +17,10 @@ import {
   import { Request, Response } from 'express';
 import { QuestionService } from '../services/question.service';
 import { Question } from '../collections/questions.collection';
-import { QuestionDto } from '../dtos/question.dto';
+import { QuestionDto, UpdateQuestionDto } from '../dtos/question.dto';
 
-  
-  @Controller('questions')
+@ApiTags('Questions')
+  @Controller('')
   export class QuestionController {
     constructor(private questionService: QuestionService) { }
   
@@ -30,15 +30,15 @@ import { QuestionDto } from '../dtos/question.dto';
      * @param res
      * @returns
      */
-    @Post('')
+    @Post('questions')
     async create(
       @Res() res: Response,
       @Body() body: QuestionDto,
     ) {
       try {
-        const { id } = body;
+        const { quizId } = body;
         const data = await this.questionService.createQuestion({
-          id,
+          quizId,
           body,
         });
         console.log("Data returned: ", data);
@@ -62,14 +62,14 @@ import { QuestionDto } from '../dtos/question.dto';
       }
     }
   
-    @Get('quizzes/:quizId/questions/:quesId/answer')
+    @Get('quizzes/:quizId/questions/:quesId')
     async getAnswer(
-      @Param('cateId') cateId: string,
+      @Param('quizId') quizId: string,
       @Param('quesId') quesId: string,
       @Res() res: Response
     ) {
       try {
-        const result = await this.questionService.getOne(cateId, quesId);
+        const result = await this.questionService.getOne(quizId, quesId);
   
         return res.status(200).json({
           data: result,
@@ -93,11 +93,11 @@ import { QuestionDto } from '../dtos/question.dto';
       }
     }
   
-    @Put('quizzes/:quizId/question/:question_id')
+    @Put('quizzes/:quizId/questions/:question_id')
     async update(
       @Param('quizId') quizId: string,
       @Param('question_id') question_id: string,
-      @Body() body: Question,
+      @Body() body: UpdateQuestionDto,
       @Res() res: Response,
     ) {
       try {

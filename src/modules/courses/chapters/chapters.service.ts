@@ -121,6 +121,7 @@ export class ChaptersService {
               id: quiz.id,
               title: quiz.name,
               order: quiz.order,
+              quizFB_id: quiz.quizFB_id
             }))
           : [];
 

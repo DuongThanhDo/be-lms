@@ -6,5 +6,6 @@ import { Collection } from 'fireorm';
 export class Answer {
     id: string;
     value: string;
+    correct: boolean;
     question_id: string;
 }
