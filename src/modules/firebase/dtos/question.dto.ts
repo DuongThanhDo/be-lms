@@ -2,16 +2,19 @@ import { IsString, IsOptional } from 'class-validator';
 
 export class QuestionDto {
   @IsString()
-  id: string;
+  quizId: string;
   
   @IsString()
   name: string;
 
-  @IsString()
-  type: string;
-
   @IsOptional()
-  results: any;
+  @IsString()
+  explain: string;
+}
+
+export class UpdateQuestionDto {
+  @IsString()
+  name: string;
 
   @IsOptional()
   @IsString()

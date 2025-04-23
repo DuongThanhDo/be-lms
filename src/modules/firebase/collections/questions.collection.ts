@@ -8,8 +8,6 @@ import { AnswerCorrect } from './answer_correct.collection';
 export class Question {
     id: string;
     name: string;
-    type: string;
-    results: [];
     explain: string;
 
     @SubCollection(Answer)

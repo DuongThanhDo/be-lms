@@ -18,7 +18,7 @@ export class AnswerService {
 
   async createAnswer(data: any) {
     try {
-      const { body } = data;
+      const { questionId, quizId, body } = data;
 
       const documents = {
         id: uuidv4(),
@@ -29,7 +29,7 @@ export class AnswerService {
 
       const doc = this.firestore
         .collection(
-          `quizzes/${body.quiz_id}/Questions/${documents.question_id}/Answers`,
+          `quizzes/${quizId}/Questions/${questionId}/Answers`,
         )
         .doc(documents.id);
 
