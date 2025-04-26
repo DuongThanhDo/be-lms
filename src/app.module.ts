@@ -20,16 +20,30 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { NoteModule } from './modules/courses/chapters/lectures/notes/notes.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
 import { QuizSQLModule } from './modules/courses/chapters/quizSQL/quizSQL.module';
+import { CourseRegistrationsModule } from './modules/registrations/course-registrations.module';
+import { LessonProgressesModule } from './modules/registrations/lesson-progress/less-progress.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(databaseConfig),
+  imports: [
+    TypeOrmModule.forRoot(databaseConfig),
     UsersModule,
     ProfilesModule,
     ProfessionsModule,
-    CoursesModule,ChaptersModule, LecturesModule,
-    CentralInformationModule,RoomModule,
-    MediaModule, CategoriesModule,
-    CourseOutcomesModule, CourseRequirementsModule,CommentsModule,NoteModule, FirebaseModule, QuizSQLModule
+    CoursesModule,
+    ChaptersModule,
+    LecturesModule,
+    CentralInformationModule,
+    RoomModule,
+    MediaModule,
+    CategoriesModule,
+    CourseOutcomesModule,
+    CourseRequirementsModule,
+    CommentsModule,
+    NoteModule,
+    FirebaseModule,
+    QuizSQLModule,
+    CourseRegistrationsModule,
+    LessonProgressesModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

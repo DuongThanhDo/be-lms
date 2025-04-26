@@ -14,6 +14,7 @@ import { Media } from '../medias/media.entity';
 import { Category } from '../central_information/categories/category.entity';
 import { CourseOutcome } from './outcomes/course-outcomes.entity';
 import { CourseRequirement } from './requirements/course-requirements.entity';
+import { CourseRegistration } from '../registrations/course-registrations.entity';
 
 @Entity('courses')
 export class Course {
@@ -36,6 +37,8 @@ export class Course {
   @OneToMany(() => CourseRequirement, (c) => c.course, { cascade: true })
   requirements: CourseRequirement[];
 
+  @OneToMany(() => CourseRegistration, (course) => course.user)
+  courseRegistrations: CourseRegistration[];
 
   @Column({ length: 255 })
   name: string;

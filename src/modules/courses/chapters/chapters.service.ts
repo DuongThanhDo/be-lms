@@ -2,10 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chapter } from './chapters.entity';
-import { CreateChapterDto, UpdateChapterDto } from './chapters.dto';
+import { CreateChapterDto, GetContentByStudentDto, UpdateChapterDto } from './chapters.dto';
 import { Course } from '../courses.entity';
 import { Lecture } from './lectures/lectures.entity';
 import { QuizSQL } from './quizSQL/quizSQL.entity';
+import { CourseRegistration } from 'src/modules/registrations/course-registrations.entity';
+import { LessonProgress } from 'src/modules/registrations/lesson-progress/lesson-progress.entity';
+import { LessonType } from 'src/common/constants/enum';
 
 @Injectable()
 export class ChaptersService {
@@ -18,6 +21,10 @@ export class ChaptersService {
     private lectureRepository: Repository<Lecture>,
     @InjectRepository(QuizSQL)
     private quizRepository: Repository<QuizSQL>,
+    @InjectRepository(CourseRegistration)
+    private courseRegistrationRepository: Repository<CourseRegistration>,
+    @InjectRepository(LessonProgress)
+    private lessonProgressRepository: Repository<LessonProgress>,
   ) {}
 
   async findAll(courseId: number): Promise<Chapter[]> {
@@ -93,6 +100,7 @@ export class ChaptersService {
     // return totalLectureDuration + totalExerciseDuration + totalQuizDuration;
   }
 
+  // Hàm lấy danh sách khóa học tương ứng theo từng chương cho khóa học
   async getChaptersWithContent(courseId: number): Promise<any[]> {
     const chapters = await this.chapterRepository.find({
       where: { course: { id: courseId } },
@@ -141,4 +149,84 @@ export class ChaptersService {
 
     return chaptersWithContent;
   }
+
+  // Hàm lấy danh sách bài học có "Tiến độ học tập" tương ứng theo từng chương cho khóa học
+  async getChaptersWithContentAndProgress(dto: GetContentByStudentDto): Promise<any[]> {
+    const { courseId, userId } = dto;
+    
+    const chapters = await this.chapterRepository.find({
+      where: { course: { id: courseId } },
+      relations: ['lectures', 'lectures.video', 'quizzes'],
+      order: { order: 'ASC' },
+    });
+  
+    const courseRegistration = await this.courseRegistrationRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+      },
+    });
+  
+    if (!courseRegistration) {
+      throw new Error('User chưa đăng ký khóa học này');
+    }
+  
+    const lessonProgresses = await this.lessonProgressRepository.find({
+      where: { courseRegistration: { id: courseRegistration.id } },
+    });
+  
+    const getLessonProgressData = (lessonId: number, type: LessonType) => {
+      return lessonProgresses.find(lp => (lp.lesson_id === lessonId && lp.type === type));
+    };
+  
+    const chaptersWithContent = await Promise.all(
+      chapters.map(async (chapter) => {
+        const lectures = chapter.lectures?.map((lecture) => {
+          const progress = getLessonProgressData(lecture.id, LessonType.LECTURE);
+          return {
+            type: 'lecture',
+            id: lecture.id,
+            title: lecture.title,
+            video: lecture.video ?? null,
+            order: lecture.order,
+            description: lecture.description,
+            duration: lecture.duration,
+            status: progress?.status ?? false,
+            progress: progress?.progress ?? 0,
+            score: progress?.score ?? null,
+            attempts: progress?.attempts ?? 0,
+            lastAccessedAt: progress?.lastAccessedAt ?? null,
+          };
+        }) || [];
+  
+        const quizzes = chapter.quizzes?.map((quiz) => {
+          const progress = getLessonProgressData(quiz.id, LessonType.QUIZ);
+          return {
+            type: 'quiz',
+            id: quiz.id,
+            title: quiz.name,
+            quizFB_id: quiz.quizFB_id,
+            order: quiz.order,
+            status: progress?.status ?? false,
+            progress: progress?.progress ?? 0,
+            score: progress?.score ?? null,
+            attempts: progress?.attempts ?? 0,
+            lastAccessedAt: progress?.lastAccessedAt ?? null,
+          };
+        }) || [];
+  
+        const durationChapter = await this.getTotalDurationForChapter(chapter.id);
+  
+        return {
+          id: chapter.id,
+          title: chapter.title,
+          duration: durationChapter,
+          items: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
+        };
+      }),
+    );
+  
+    return chaptersWithContent;
+  }
+  
 }
