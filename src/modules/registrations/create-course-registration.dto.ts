@@ -1,9 +1,13 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class CreateCourseRegistrationDto {
-  @IsInt()
+  @IsNumber()
+  @Type(() => Number) 
   userId: number;
 
-  @IsInt()
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
   courseId: number;
 }

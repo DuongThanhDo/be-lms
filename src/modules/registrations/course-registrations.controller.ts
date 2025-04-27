@@ -1,28 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CourseRegistrationsService } from './course-registrations.service';
 import { CreateCourseRegistrationDto } from './create-course-registration.dto';
 
 @Controller('course-registrations')
 export class CourseRegistrationsController {
-  constructor(private readonly service: CourseRegistrationsService) {}
+  constructor(private readonly courseRegistrationService: CourseRegistrationsService) {}
 
   @Post()
   create(@Body() dto: CreateCourseRegistrationDto) {
-    return this.service.create(dto);
+    return this.courseRegistrationService.create(dto);
   }
 
   @Get('/student/:userId')
   findAllByStudent(@Param('userId') userId: string) {
-    return this.service.findAllByStudent(+userId);
+    return this.courseRegistrationService.findAllByStudent(+userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(+id);
+  @Post('check-purchased')
+  async checkPurchased(@Body() dto: CreateCourseRegistrationDto) {
+    const isPurchased = await this.courseRegistrationService.checkPurchased(dto);
+    return { isPurchased };
+  }
+
+  @Get('/get-one')
+  findOneByStudent(@Query() dto: CreateCourseRegistrationDto) {
+    return this.courseRegistrationService.findOneByStudent(dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.service.remove(+id);
+    return this.courseRegistrationService.remove(+id);
   }
 }

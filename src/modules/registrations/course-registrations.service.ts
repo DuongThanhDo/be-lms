@@ -99,9 +99,17 @@ export class CourseRegistrationsService {
     });
   }
 
-  async findOne(id: number) {
+  async checkPurchased(dto: CreateCourseRegistrationDto) {
+    const course = await this.courseRegRepo.findOne({
+      where: { user: { id: dto.userId }, course: { id: dto.courseId } }
+    });
+    return !!course;
+  }
+
+  async findOneByStudent(dto: CreateCourseRegistrationDto) {
+    const { userId, courseId } = dto;
     const reg = await this.courseRegRepo.findOne({
-      where: { id },
+      where: { user: { id: userId }, course: { id: courseId } },
       relations: ['course'],
     });
     if (!reg) throw new NotFoundException('Registration not found');

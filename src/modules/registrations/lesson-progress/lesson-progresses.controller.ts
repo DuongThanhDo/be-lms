@@ -22,7 +22,7 @@ export class LessonProgressesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateLessonProgressDto) {
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateLessonProgressDto) {
     return this.lessonProgressesService.updateStatus(+id, dto);
   }
 

@@ -35,7 +35,10 @@ export class LessonProgressesService {
     const progress = await this.lessonProgressRepository.findOne({ where: { id }, relations: ['courseRegistration'] });
     if (!progress) throw new NotFoundException('Lesson progress not found');
 
-    if (status !== undefined ) progress.status = status;
+    if (status !== undefined) {
+      progress.status = status;
+      progress.progress = status ? 1 : 0;
+    }
     if (score !== undefined) progress.score = score;
     progress.updatedAt = new Date();
 
