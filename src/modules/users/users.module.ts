@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { JwtGuard } from 'src/common/guards/jwt.guard';
-import { JwtStratery } from 'src/common/guards/jwt.strategy';
+import { JwtStrategy } from 'src/common/guards/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UserProfile } from './profiles/profiles.entity';
 import { Profession } from './professions/professions.entity';
@@ -22,7 +22,7 @@ import { Media } from '../medias/media.entity';
       }),
     }),MediaModule
   ],
-  providers: [UsersService, JwtGuard, JwtStratery],
+  providers: [UsersService, JwtGuard, JwtStrategy],
   controllers: [UsersController],
 })
 export class UsersModule {}

@@ -87,10 +87,8 @@ export class QuestionService {
 
       const quizzs: any[] = [];
       snapshot.docs.forEach((doc) => {
-        console.log(doc.data());
         quizzs.push(doc.data());
       });
-      console.log(quizzs);
       return quizzs;
     } catch (error: any) {
       console.error('Error fetching quizzes:', error);
@@ -106,8 +104,6 @@ export class QuestionService {
 
       const ansRef = this.firestore.collection(`quizzes/${cateId}/Questions/`).doc(quesId);
       const doc = (await ansRef.get()).data();
-
-      console.log(doc);
 
       return doc;
     } catch (error: any) {

@@ -12,7 +12,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ChaptersService } from './chapters.service';
-import { CreateChapterDto, UpdateChapterDto } from './chapters.dto';
+import { CreateChapterDto, GetContentByStudentDto, UpdateChapterDto } from './chapters.dto';
 import { Chapter } from './chapters.entity';
 
 @Controller('chapters')
@@ -30,6 +30,11 @@ export class ChaptersController {
     return await this.chaptersService.getChaptersWithContent(id);
   }
 
+  @Get("student/content")
+  async getChaptersWithContentAndProgress(@Query() dto: GetContentByStudentDto): Promise<any[]> {
+    return await this.chaptersService.getChaptersWithContentAndProgress(dto);
+  }
+  
   @Get()
   async findAll(@Query('courseId', ParseIntPipe) courseId: number): Promise<Chapter[]> {
     if (!courseId) {

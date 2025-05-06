@@ -41,7 +41,6 @@ import { QuestionDto, UpdateQuestionDto } from '../dtos/question.dto';
           quizId,
           body,
         });
-        console.log("Data returned: ", data);
         return res.status(200).json(data);
       } catch (error) {
         console.error("Error: ", error);

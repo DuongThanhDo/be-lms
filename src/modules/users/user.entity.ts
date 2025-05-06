@@ -1,9 +1,12 @@
+import { Payment } from './../payments/payment.entity';
 import { UserRole } from 'src/common/constants/enum';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { UserProfile } from './profiles/profiles.entity';
 import { Profession } from './professions/professions.entity';
 import { Course } from '../courses/courses.entity';
 import { Exclude } from 'class-transformer';
+import { CourseRegistration } from '../registrations/course-registrations.entity';
+import { LessonProgress } from '../registrations/lesson-progress/lesson-progress.entity';
 
 @Entity('users')
 export class User {
@@ -39,4 +42,13 @@ export class User {
 
   @OneToMany(() => Course, (course) => course.teacher)
   courses: Course[];
+
+  @OneToMany(() => Payment, (p) => p.user)
+  payments: Payment[];
+
+  @OneToMany(() => CourseRegistration, (course) => course.user)
+  courseRegistrations: CourseRegistration[];
+
+  @OneToMany(() => LessonProgress, (course) => course.user)
+  lessonProgresses: LessonProgress[];
 }

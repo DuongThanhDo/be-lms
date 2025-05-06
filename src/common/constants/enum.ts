@@ -23,3 +23,16 @@ export enum CommentableType {
   QUIZ = 'quiz',
   COMMENT = 'comment'
 }
+
+export enum StatusPayment {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  REFUNDED = 'refunded',
+}
+
+export enum LessonType {
+  LECTURE = 'lecture',
+  QUIZ = 'quiz',
+  CODE = 'code'
+}
