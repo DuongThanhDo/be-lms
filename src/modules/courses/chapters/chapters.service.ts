@@ -93,11 +93,7 @@ export class ChaptersService {
       (sum, l) => sum + (l.duration || 0),
       0,
     );
-    // const totalExerciseDuration = exercises.reduce((sum, e) => sum + (e.duration || 0), 0);
-    const totalQuizDuration = quizzes.reduce((sum, q) => sum + 60, 0);
-
-    return totalLectureDuration + totalQuizDuration;
-    // return totalLectureDuration + totalExerciseDuration + totalQuizDuration;
+    return totalLectureDuration;
   }
 
   // Hàm lấy danh sách khóa học tương ứng theo từng chương cho khóa học

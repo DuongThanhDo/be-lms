@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import {
   CreateCourseDto,
   FindTopCoursesByCondition,
-  SearchCourseByTearch,
+  SearchCourse,
   SearchCourseForStudent,
   UpdateCourseDto,
 } from './courses.dto';
@@ -50,40 +50,46 @@ export class CoursesService {
     return course;
   }
 
-  async findAllByTeacher(dto: SearchCourseByTearch): Promise<any[]> {
+  async searchCourses(dto: SearchCourse): Promise<any[]> {
     const queryBuilder = this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.image', 'image')
-      .where('course.teacher_id = :teacherId', { teacherId: dto.teacherId })
-      .orderBy('course.updated_at', 'DESC');
-
+      .leftJoinAndSelect('course.teacher', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('course.image', 'image');
+  
+    if (dto.teacherId) {
+      queryBuilder.where('course.teacher_id = :teacherId', { teacherId: dto.teacherId });
+    }
+  
     if (dto.searchValue) {
       queryBuilder.andWhere(
         '(course.name LIKE :search OR course.description LIKE :search)',
         { search: `%${dto.searchValue}%` },
       );
     }
-
+  
     if (dto.category) {
       queryBuilder.andWhere('course.category_id = :category', {
         category: dto.category,
       });
     }
-
+  
     if (dto.type) {
       queryBuilder.andWhere('course.type = :type', { type: dto.type });
     }
-
+  
     if (dto.status) {
       queryBuilder.andWhere('course.status = :status', { status: dto.status });
     }
-
+  
+    queryBuilder.orderBy('course.updated_at', 'DESC');
+  
     const courses = await queryBuilder.getMany();
-
+  
     return courses.map((course) => ({
       id: course.id,
-      teacherId: course.teacher?.id,
+      teacher_name: course.teacher?.profile?.name,
       name: course.name,
       description: course.description,
       category: course.category?.name,
@@ -95,6 +101,7 @@ export class CoursesService {
       updated_at: course.updated_at,
     }));
   }
+  
 
   async findAllForStudent(
     dto: SearchCourseForStudent,

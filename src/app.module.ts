@@ -22,6 +22,8 @@ import { FirebaseModule } from './modules/firebase/firebase.module';
 import { QuizSQLModule } from './modules/courses/chapters/quizSQL/quizSQL.module';
 import { CourseRegistrationsModule } from './modules/registrations/course-registrations.module';
 import { LessonProgressesModule } from './modules/registrations/lesson-progress/less-progress.module';
+import { PaymentModule } from './modules/payments/payment.module';
+import { VNPaymentModule } from './modules/payments/vnpay/vnpay.module';
 
 @Module({
   imports: [
@@ -43,7 +45,7 @@ import { LessonProgressesModule } from './modules/registrations/lesson-progress/
     FirebaseModule,
     QuizSQLModule,
     CourseRegistrationsModule,
-    LessonProgressesModule
+    LessonProgressesModule,PaymentModule, VNPaymentModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

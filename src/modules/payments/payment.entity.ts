@@ -1,16 +1,15 @@
 import { StatusPayment } from 'src/common/constants/enum';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { User } from '../users/user.entity';
+import { Course } from '../courses/courses.entity';
 
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  user_id: number;
-
-  @Column()
-  course_id: number;
+  @ManyToOne(() => User, (p) => p.payments)
+  user: User | null;
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
@@ -18,7 +17,7 @@ export class Payment {
   @Column({
     type: 'enum',
     enum: StatusPayment,
-    default: 'pending',
+    default: StatusPayment.PENDING,
   })
   status: StatusPayment;
 

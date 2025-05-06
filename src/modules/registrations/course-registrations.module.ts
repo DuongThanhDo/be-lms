@@ -12,6 +12,6 @@ import { Chapter } from '../courses/chapters/chapters.entity';
   imports: [TypeOrmModule.forFeature([CourseRegistration, User, Course, Chapter, LessonProgress])],
   controllers: [CourseRegistrationsController],
   providers: [CourseRegistrationsService],
-  exports: [CourseRegistrationsService],
+  exports: [CourseRegistrationsService, CourseRegistrationsModule],
 })
 export class CourseRegistrationsModule {}

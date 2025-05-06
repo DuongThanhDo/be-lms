@@ -47,10 +47,10 @@ export class UpdateCourseDto {
   status?: CourseStatus;
 }
 
-export class SearchCourseByTearch {
-  @IsNotEmpty()
+export class SearchCourse {
+  @IsOptional()
   @IsString()
-  teacherId: string;
+  teacherId?: string;
 
   @IsOptional()
   @IsString()

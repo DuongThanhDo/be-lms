@@ -15,6 +15,7 @@ import { Category } from '../central_information/categories/category.entity';
 import { CourseOutcome } from './outcomes/course-outcomes.entity';
 import { CourseRequirement } from './requirements/course-requirements.entity';
 import { CourseRegistration } from '../registrations/course-registrations.entity';
+import { Payment } from '../payments/payment.entity';
 
 @Entity('courses')
 export class Course {

@@ -1,3 +1,4 @@
+import { Payment } from './../payments/payment.entity';
 import { UserRole } from 'src/common/constants/enum';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { UserProfile } from './profiles/profiles.entity';
@@ -41,6 +42,9 @@ export class User {
 
   @OneToMany(() => Course, (course) => course.teacher)
   courses: Course[];
+
+  @OneToMany(() => Payment, (p) => p.user)
+  payments: Payment[];
 
   @OneToMany(() => CourseRegistration, (course) => course.user)
   courseRegistrations: CourseRegistration[];
