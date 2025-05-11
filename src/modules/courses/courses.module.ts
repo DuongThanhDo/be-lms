@@ -10,10 +10,11 @@ import { Category } from '../central_information/categories/category.entity';
 import { CourseOutcomesModule } from './outcomes/course-outcomes.module';
 import { CourseRequirementsModule } from './requirements/course-requirements.module';
 import { ChaptersModule } from './chapters/chapters.module';
+import { Certificate } from '../central_information/certificates/certificate.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Course, User, Media, Category]),
+    TypeOrmModule.forFeature([Course, User, Media, Category, Certificate]),
     MediaModule,
     CourseOutcomesModule,
     CourseRequirementsModule,

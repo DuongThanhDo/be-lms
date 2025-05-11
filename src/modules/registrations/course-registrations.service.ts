@@ -43,7 +43,7 @@ export class CourseRegistrationsService {
         course: { id: dto.courseId },
       },
     });
-    ``;
+    
     if (existingRegis) {
       throw new BadRequestException(
         `User ${dto.userId} has already registered for course ${dto.courseId}`,

@@ -36,3 +36,9 @@ export enum LessonType {
   QUIZ = 'quiz',
   CODE = 'code'
 }
+
+export enum CertificateStatus {
+  INIT = 'init',
+  ACTIVE = 'active',
+  LOCKED = 'locked',
+}

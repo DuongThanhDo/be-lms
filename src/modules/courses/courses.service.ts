@@ -17,6 +17,7 @@ import { ChaptersService } from './chapters/chapters.service';
 import { CourseOutcomesService } from './outcomes/course-outcomes.service';
 import { CourseRequirementsService } from './requirements/course-requirements.service';
 import { CourseStatus, CourseType } from 'src/common/constants/enum';
+import { Certificate } from '../central_information/certificates/certificate.entity';
 
 @Injectable()
 export class CoursesService {
@@ -27,6 +28,8 @@ export class CoursesService {
     private userRepository: Repository<User>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Certificate)
+    private certificateRepository: Repository<Certificate>,
     private readonly mediaService: MediaService,
     private readonly chapterService: ChaptersService,
     private readonly outcomeService: CourseOutcomesService,
@@ -40,7 +43,7 @@ export class CoursesService {
   async findOne(id: number): Promise<Course> {
     const course = await this.courseRepository.findOne({
       where: { id },
-      relations: ['category', 'image'],
+      relations: ['category', 'image', 'certificate'],
     });
 
     if (!course) {
@@ -211,8 +214,11 @@ export class CoursesService {
     const category = await this.categoryRepository.findOne({
       where: { id: dto.category },
     });
+    const certificate = await this.certificateRepository.findOne({
+      where: { id: dto.certificate },
+    });
     const course = await this.findOne(id);
-    Object.assign(course, { ...dto, category });
+    Object.assign(course, { ...dto, category, certificate });
     return this.courseRepository.save(course);
   }
 

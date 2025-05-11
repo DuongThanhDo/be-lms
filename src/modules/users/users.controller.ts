@@ -7,19 +7,21 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, ExistingUserDto, ChangePasswordDto } from './user.dto';
+import { CreateUserDto, ExistingUserDto, ChangePasswordDto, CreateUserByAdminDto } from './user.dto';
+import { UserRole } from 'src/common/constants/enum';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAllByRole(@Query('role') role: UserRole) {
+    return this.usersService.findAllByRole(role);
   }
 
   @Get(':id')
@@ -32,10 +34,20 @@ export class UsersController {
     return this.usersService.register(createUserDto);
   }
 
+  @Post('registerByAdmin')
+  async registerByAdmin(@Body() createUserByAdminDto: CreateUserByAdminDto) {
+    return this.usersService.registerByAdmin(createUserByAdminDto);
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() existingUserDto: ExistingUserDto) {
     return this.usersService.login(existingUserDto);
+  }
+
+  @Patch('lock/:id')
+  async toggleLock(@Param('id') id: string, @Body('isLock') isLock: boolean) {
+    return this.usersService.toggleLock(+id, isLock);
   }
 
   @Post('google')

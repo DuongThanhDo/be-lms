@@ -13,6 +13,10 @@ export class CreateCourseDto {
   @IsNumber()
   teacherId: number;
 
+  @IsOptional()
+  @IsNumber()
+  certificate: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -30,6 +34,10 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsNumber()
+  certificate?: number;
 
   @IsOptional()
   @IsString()
