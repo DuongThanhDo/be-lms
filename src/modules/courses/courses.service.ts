@@ -60,36 +60,38 @@ export class CoursesService {
       .leftJoinAndSelect('course.teacher', 'user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('course.image', 'image');
-  
+
     if (dto.teacherId) {
-      queryBuilder.where('course.teacher_id = :teacherId', { teacherId: dto.teacherId });
+      queryBuilder.where('course.teacher_id = :teacherId', {
+        teacherId: dto.teacherId,
+      });
     }
-  
+
     if (dto.searchValue) {
       queryBuilder.andWhere(
         '(course.name LIKE :search OR course.description LIKE :search)',
         { search: `%${dto.searchValue}%` },
       );
     }
-  
+
     if (dto.category) {
       queryBuilder.andWhere('course.category_id = :category', {
         category: dto.category,
       });
     }
-  
+
     if (dto.type) {
       queryBuilder.andWhere('course.type = :type', { type: dto.type });
     }
-  
+
     if (dto.status) {
       queryBuilder.andWhere('course.status = :status', { status: dto.status });
     }
-  
+
     queryBuilder.orderBy('course.updated_at', 'DESC');
-  
+
     const courses = await queryBuilder.getMany();
-  
+
     return courses.map((course) => ({
       id: course.id,
       teacher_name: course.teacher?.profile?.name,
@@ -104,7 +106,6 @@ export class CoursesService {
       updated_at: course.updated_at,
     }));
   }
-  
 
   async findAllForStudent(
     dto: SearchCourseForStudent,
@@ -117,7 +118,7 @@ export class CoursesService {
       .leftJoinAndSelect('course.image', 'image')
       .leftJoinAndSelect('course.teacher', 'teacher')
       .leftJoinAndSelect('teacher.profile', 'profile')
-    // .where('course.status = :status', { status: CourseStatus.PUBLISHED });
+      .where('course.status = :status', { status: CourseStatus.PUBLISHED });
 
     if (searchValue) {
       queryBuilder.andWhere(
@@ -263,7 +264,7 @@ export class CoursesService {
       .leftJoinAndSelect('course.image', 'image')
       .leftJoinAndSelect('course.teacher', 'teacher')
       .leftJoinAndSelect('teacher.profile', 'profile')
-      // .where('course.status = :status', { status: 'published' })
+      .where('course.status = :status', { status: CourseStatus.PUBLISHED })
       .orderBy('course.updated_at', 'DESC')
       .limit(limit);
 

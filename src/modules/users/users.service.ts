@@ -85,7 +85,7 @@ export class UsersService {
   async findAllByRole(role: UserRole) {
     return this.userRepository.find({
       where: { role: role },
-      relations: ['profile', 'profession'],
+      relations: ['profile', 'profession', 'profile.avatar'],
     });
   }
 

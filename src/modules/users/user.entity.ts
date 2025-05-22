@@ -7,6 +7,7 @@ import { Course } from '../courses/courses.entity';
 import { Exclude } from 'class-transformer';
 import { CourseRegistration } from '../registrations/course-registrations.entity';
 import { LessonProgress } from '../registrations/lesson-progress/lesson-progress.entity';
+import { Message } from '../messages/message.entity';
 
 @Entity('users')
 export class User {
@@ -49,6 +50,9 @@ export class User {
   @OneToMany(() => CourseRegistration, (course) => course.user)
   courseRegistrations: CourseRegistration[];
 
-  @OneToMany(() => LessonProgress, (course) => course.user)
+  @OneToMany(() => LessonProgress, (u) => u.user)
   lessonProgresses: LessonProgress[];
+
+  @OneToMany(() => Message, (u) => u.sender)
+  sentMessages: Message[];
 }

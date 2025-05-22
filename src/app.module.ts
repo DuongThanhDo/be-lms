@@ -26,6 +26,7 @@ import { PaymentModule } from './modules/payments/payment.module';
 import { VNPaymentModule } from './modules/payments/vnpay/vnpay.module';
 import { CourseScheduleModule } from './modules/courses/schedules/course-schedule.module';
 import { CertificateModule } from './modules/central_information/certificates/certificate.module';
+import { MessagesModule } from './modules/messages/messages.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { CertificateModule } from './modules/central_information/certificates/ce
     PaymentModule,
     VNPaymentModule,
     CourseScheduleModule,
-    CertificateModule
+    CertificateModule,
+    MessagesModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

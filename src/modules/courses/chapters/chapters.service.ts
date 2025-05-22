@@ -189,8 +189,6 @@ export class ChaptersService {
             status: progress?.status ?? false,
             progress: progress?.progress ?? 0,
             score: progress?.score ?? null,
-            attempts: progress?.attempts ?? 0,
-            lastAccessedAt: progress?.lastAccessedAt ?? null,
           };
         }) || [];
   
@@ -206,8 +204,6 @@ export class ChaptersService {
             status: progress?.status ?? false,
             progress: progress?.progress ?? 0,
             score: progress?.score ?? null,
-            attempts: progress?.attempts ?? 0,
-            lastAccessedAt: progress?.lastAccessedAt ?? null,
           };
         }) || [];
   

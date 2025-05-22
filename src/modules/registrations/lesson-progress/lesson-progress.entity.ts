@@ -33,12 +33,6 @@ import { User } from 'src/modules/users/user.entity';
     @Column({ type: 'float', nullable: true })
     score: number;
   
-    @Column({ type: 'int', default: 0 })
-    attempts: number;
-  
-    @Column({ type: 'timestamp', nullable: true })
-    lastAccessedAt: Date;
-  
     @Column({ type: 'enum', enum: LessonType })
     type: LessonType;
   
