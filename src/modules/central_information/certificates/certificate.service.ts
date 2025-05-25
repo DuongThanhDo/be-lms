@@ -38,13 +38,7 @@ export class CertificateService {
   async update(id: number, dto: UpdateCertificateDto) {
     const cert = await this.repo.findOneBy({ id });
     if (!cert) throw new NotFoundException('Không tìm thấy chứng chỉ');
-    if (!Boolean(dto.status)) {
-      const courses = await this.repoCourse.find({
-        where: { certificate: { id: id } },
-      });
-      if (courses.length > 0)
-        return { success: false, message: 'Đang có khóa học sử dụng chứng chỉ này' };
-    }
+
     Object.assign(cert, dto);
     return this.repo.save(cert);
   }

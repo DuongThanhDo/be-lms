@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LessonProgress } from './lesson-progress.entity';
 import { CourseRegistration } from '../course-registrations.entity';
-import { CreateLessonProgressDto, UpdateLessonProgressDto } from './lesson-progress.dto';
+import {
+  CreateLessonProgressDto,
+  UpdateLessonProgressDto,
+} from './lesson-progress.dto';
 
 @Injectable()
 export class LessonProgressesService {
@@ -25,14 +28,30 @@ export class LessonProgressesService {
   }
 
   async findOne(id: number) {
-    const progress = await this.lessonProgressRepository.findOne({ where: { id } });
+    const progress = await this.lessonProgressRepository.findOne({
+      where: { id },
+    });
+    if (!progress) throw new NotFoundException('Lesson progress not found');
+    return progress;
+  }
+
+  async findOneByUser(lesson_id: number, user_id: number) {
+    const progress = await this.lessonProgressRepository.findOne({
+      where: {
+        user: { id: user_id },
+        lesson_id: lesson_id,
+      },
+    });
     if (!progress) throw new NotFoundException('Lesson progress not found');
     return progress;
   }
 
   async updateStatus(id: number, dto: UpdateLessonProgressDto) {
     const { score, status } = dto;
-    const progress = await this.lessonProgressRepository.findOne({ where: { id }, relations: ['courseRegistration'] });
+    const progress = await this.lessonProgressRepository.findOne({
+      where: { id },
+      relations: ['courseRegistration'],
+    });
     if (!progress) throw new NotFoundException('Lesson progress not found');
 
     if (status !== undefined) {
@@ -47,9 +66,11 @@ export class LessonProgressesService {
     await this.lessonProgressRepository.save(progress);
 
     const registration = progress.courseRegistration;
-    const allProgresses = await this.lessonProgressRepository.find({ where: { courseRegistration: { id: registration.id } } });
+    const allProgresses = await this.lessonProgressRepository.find({
+      where: { courseRegistration: { id: registration.id } },
+    });
 
-    const completed = allProgresses.filter(p => p.progress >= 1).length;
+    const completed = allProgresses.filter((p) => p.progress >= 1).length;
     const total = allProgresses.length;
     registration.progress = total > 0 ? (completed / total) * 100 : 0;
     registration.updatedAt = new Date();

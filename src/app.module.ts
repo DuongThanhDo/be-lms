@@ -27,6 +27,8 @@ import { VNPaymentModule } from './modules/payments/vnpay/vnpay.module';
 import { CourseScheduleModule } from './modules/courses/schedules/course-schedule.module';
 import { CertificateModule } from './modules/central_information/certificates/certificate.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
+import { StudentCertModule } from './modules/central_information/certificates/student_cert/student-cert.module';
 
 @Module({
   imports: [
@@ -53,7 +55,9 @@ import { MessagesModule } from './modules/messages/messages.module';
     VNPaymentModule,
     CourseScheduleModule,
     CertificateModule,
-    MessagesModule
+    MessagesModule,
+    StatisticsModule,
+    StudentCertModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],
