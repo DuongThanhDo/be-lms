@@ -22,6 +22,11 @@ export class CourseRegistrationsController {
     return { isPurchased };
   }
 
+  @Get('/students/:courseId')
+  getStudentsByCourse(@Param('courseId') courseId: string) {
+    return this.courseRegistrationService.findStudentsByCourse(+courseId);
+  }
+
   @Get('/get-one')
   findOneByStudent(@Query() dto: CreateCourseRegistrationDto) {
     return this.courseRegistrationService.findOneByStudent(dto);

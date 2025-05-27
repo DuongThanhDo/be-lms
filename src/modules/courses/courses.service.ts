@@ -17,6 +17,7 @@ import { ChaptersService } from './chapters/chapters.service';
 import { CourseOutcomesService } from './outcomes/course-outcomes.service';
 import { CourseRequirementsService } from './requirements/course-requirements.service';
 import { CourseStatus, CourseType } from 'src/common/constants/enum';
+import { Certificate } from '../central_information/certificates/certificate.entity';
 
 @Injectable()
 export class CoursesService {
@@ -27,6 +28,8 @@ export class CoursesService {
     private userRepository: Repository<User>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Certificate)
+    private certificateRepository: Repository<Certificate>,
     private readonly mediaService: MediaService,
     private readonly chapterService: ChaptersService,
     private readonly outcomeService: CourseOutcomesService,
@@ -40,7 +43,7 @@ export class CoursesService {
   async findOne(id: number): Promise<Course> {
     const course = await this.courseRepository.findOne({
       where: { id },
-      relations: ['category', 'image'],
+      relations: ['category', 'image', 'certificate'],
     });
 
     if (!course) {
@@ -57,36 +60,38 @@ export class CoursesService {
       .leftJoinAndSelect('course.teacher', 'user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('course.image', 'image');
-  
+
     if (dto.teacherId) {
-      queryBuilder.where('course.teacher_id = :teacherId', { teacherId: dto.teacherId });
+      queryBuilder.where('course.teacher_id = :teacherId', {
+        teacherId: dto.teacherId,
+      });
     }
-  
+
     if (dto.searchValue) {
       queryBuilder.andWhere(
         '(course.name LIKE :search OR course.description LIKE :search)',
         { search: `%${dto.searchValue}%` },
       );
     }
-  
+
     if (dto.category) {
       queryBuilder.andWhere('course.category_id = :category', {
         category: dto.category,
       });
     }
-  
+
     if (dto.type) {
       queryBuilder.andWhere('course.type = :type', { type: dto.type });
     }
-  
+
     if (dto.status) {
       queryBuilder.andWhere('course.status = :status', { status: dto.status });
     }
-  
+
     queryBuilder.orderBy('course.updated_at', 'DESC');
-  
+
     const courses = await queryBuilder.getMany();
-  
+
     return courses.map((course) => ({
       id: course.id,
       teacher_name: course.teacher?.profile?.name,
@@ -101,7 +106,6 @@ export class CoursesService {
       updated_at: course.updated_at,
     }));
   }
-  
 
   async findAllForStudent(
     dto: SearchCourseForStudent,
@@ -114,7 +118,7 @@ export class CoursesService {
       .leftJoinAndSelect('course.image', 'image')
       .leftJoinAndSelect('course.teacher', 'teacher')
       .leftJoinAndSelect('teacher.profile', 'profile')
-    // .where('course.status = :status', { status: CourseStatus.PUBLISHED });
+      .where('course.status = :status', { status: CourseStatus.PUBLISHED });
 
     if (searchValue) {
       queryBuilder.andWhere(
@@ -211,8 +215,11 @@ export class CoursesService {
     const category = await this.categoryRepository.findOne({
       where: { id: dto.category },
     });
+    const certificate = await this.certificateRepository.findOne({
+      where: { id: dto.certificate },
+    });
     const course = await this.findOne(id);
-    Object.assign(course, { ...dto, category });
+    Object.assign(course, { ...dto, category, certificate });
     return this.courseRepository.save(course);
   }
 
@@ -257,7 +264,7 @@ export class CoursesService {
       .leftJoinAndSelect('course.image', 'image')
       .leftJoinAndSelect('course.teacher', 'teacher')
       .leftJoinAndSelect('teacher.profile', 'profile')
-      // .where('course.status = :status', { status: 'published' })
+      .where('course.status = :status', { status: CourseStatus.PUBLISHED })
       .orderBy('course.updated_at', 'DESC')
       .limit(limit);
 

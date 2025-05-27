@@ -20,8 +20,8 @@ export class UserProfile {
   @Column({ type: 'date', nullable: true })
   date_of_birth: Date;
 
-  @Column({ type: 'boolean', default: true })
-  gender: boolean;
+  @Column({ type: 'boolean', nullable: true })
+  gender: boolean | null;
 
   @Column({ length: 255, nullable: true })
   address: string;

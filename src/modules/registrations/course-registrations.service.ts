@@ -43,7 +43,7 @@ export class CourseRegistrationsService {
         course: { id: dto.courseId },
       },
     });
-    ``;
+
     if (existingRegis) {
       throw new BadRequestException(
         `User ${dto.userId} has already registered for course ${dto.courseId}`,
@@ -91,17 +91,32 @@ export class CourseRegistrationsService {
     return courseRegis;
   }
 
+  async findStudentsByCourse(courseId: number): Promise<any> {
+    const registrations = await this.courseRegRepo.find({
+      where: { course: { id: courseId } },
+      relations: ['user', 'user.profile'],
+    });
+
+    if (!registrations.length) {
+      throw new NotFoundException(
+        `No students found for course ID ${courseId}`,
+      );
+    }
+
+    return registrations;
+  }
+
   async findAllByStudent(userId: number) {
     return this.courseRegRepo.find({
       where: { user: { id: userId } },
-      relations: ['course', 'course.teacher.profile', 'course.image' ],
+      relations: ['course', 'course.teacher.profile', 'course.image'],
       order: { updatedAt: 'DESC' },
     });
   }
 
   async checkPurchased(dto: CreateCourseRegistrationDto) {
     const course = await this.courseRegRepo.findOne({
-      where: { user: { id: dto.userId }, course: { id: dto.courseId } }
+      where: { user: { id: dto.userId }, course: { id: dto.courseId } },
     });
     return !!course;
   }

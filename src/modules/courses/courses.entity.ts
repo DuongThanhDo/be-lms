@@ -16,6 +16,7 @@ import { CourseOutcome } from './outcomes/course-outcomes.entity';
 import { CourseRequirement } from './requirements/course-requirements.entity';
 import { CourseRegistration } from '../registrations/course-registrations.entity';
 import { Payment } from '../payments/payment.entity';
+import { Certificate } from '../central_information/certificates/certificate.entity';
 
 @Entity('courses')
 export class Course {
@@ -63,6 +64,10 @@ export class Course {
   @OneToOne(() => Media, (media) => media.course)
   @JoinColumn({ name: 'image' })
   image: Media | null;
+
+  @ManyToOne(() => Certificate, (c) => c.courses)
+  @JoinColumn({ name: 'certificate' })
+  certificate: Certificate | null;
 
   @Column({ type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT })
   status: CourseStatus;

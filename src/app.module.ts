@@ -24,6 +24,11 @@ import { CourseRegistrationsModule } from './modules/registrations/course-regist
 import { LessonProgressesModule } from './modules/registrations/lesson-progress/less-progress.module';
 import { PaymentModule } from './modules/payments/payment.module';
 import { VNPaymentModule } from './modules/payments/vnpay/vnpay.module';
+import { CourseScheduleModule } from './modules/courses/schedules/course-schedule.module';
+import { CertificateModule } from './modules/central_information/certificates/certificate.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
+import { StudentCertModule } from './modules/central_information/certificates/student_cert/student-cert.module';
 
 @Module({
   imports: [
@@ -45,7 +50,14 @@ import { VNPaymentModule } from './modules/payments/vnpay/vnpay.module';
     FirebaseModule,
     QuizSQLModule,
     CourseRegistrationsModule,
-    LessonProgressesModule,PaymentModule, VNPaymentModule
+    LessonProgressesModule,
+    PaymentModule,
+    VNPaymentModule,
+    CourseScheduleModule,
+    CertificateModule,
+    MessagesModule,
+    StatisticsModule,
+    StudentCertModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

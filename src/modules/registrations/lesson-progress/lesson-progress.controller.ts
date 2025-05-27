@@ -21,6 +21,11 @@ export class LessonProgressesController {
     return this.lessonProgressesService.findOne(+id);
   }
 
+  @Get(':lesson_id/user/:user_id')
+  findOneByUser(@Param('lesson_id') lesson_id: string, @Param('user_id') user_id: string) {
+    return this.lessonProgressesService.findOneByUser(+lesson_id, +user_id);
+  }
+
   @Patch(':id')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateLessonProgressDto) {
     return this.lessonProgressesService.updateStatus(+id, dto);

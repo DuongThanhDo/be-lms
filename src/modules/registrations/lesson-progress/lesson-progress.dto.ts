@@ -17,6 +17,7 @@ export class CreateLessonProgressDto {
 }
 
 export class UpdateLessonProgressDto {
+  @IsOptional()
   @IsBoolean()
   status?: boolean;
 

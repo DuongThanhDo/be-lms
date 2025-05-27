@@ -101,7 +101,6 @@ export class ChaptersService {
     const chapters = await this.chapterRepository.find({
       where: { course: { id: courseId } },
       relations: ['lectures', 'lectures.video', 'quizzes'],
-      //   relations: ['lectures', 'quizzes'],
       order: { order: 'ASC' },
     });
 
@@ -138,7 +137,6 @@ export class ChaptersService {
           title: chapter.title,
           duration: durationChapter,
           items: [...lectures, ...quizzes].sort((a, b) => a.order - b.order),
-          // items: lectures.sort((a, b) => a.order - b.order),
         };
       }),
     );
@@ -191,8 +189,6 @@ export class ChaptersService {
             status: progress?.status ?? false,
             progress: progress?.progress ?? 0,
             score: progress?.score ?? null,
-            attempts: progress?.attempts ?? 0,
-            lastAccessedAt: progress?.lastAccessedAt ?? null,
           };
         }) || [];
   
@@ -208,8 +204,6 @@ export class ChaptersService {
             status: progress?.status ?? false,
             progress: progress?.progress ?? 0,
             score: progress?.score ?? null,
-            attempts: progress?.attempts ?? 0,
-            lastAccessedAt: progress?.lastAccessedAt ?? null,
           };
         }) || [];
   

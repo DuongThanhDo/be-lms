@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,6 +24,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options, {});
   SwaggerModule.setup('docs', app, document);
+  
+  app.use(bodyParser.json({ limit: '5mb' }));
+  app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 
   app.enableCors();
 
