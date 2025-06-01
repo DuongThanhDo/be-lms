@@ -29,6 +29,8 @@ import { CertificateModule } from './modules/central_information/certificates/ce
 import { MessagesModule } from './modules/messages/messages.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { StudentCertModule } from './modules/central_information/certificates/student_cert/student-cert.module';
+import { OpenAIModule } from './modules/openai/openai.module';
+import { MailerCustomModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -58,6 +60,8 @@ import { StudentCertModule } from './modules/central_information/certificates/st
     MessagesModule,
     StatisticsModule,
     StudentCertModule,
+    OpenAIModule,
+    MailerCustomModule
   ],
   controllers: [AppController],
   providers: [AppService, ProfessionsService],

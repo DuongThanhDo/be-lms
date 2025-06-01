@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto, FindTopCoursesByCondition, SearchCourse, SearchCourseForStudent, UpdateCourseDto } from './courses.dto';
@@ -60,6 +61,14 @@ export class CoursesController {
     @Body() updateCourseDto: UpdateCourseDto,
   ): Promise<Course> {
     return this.coursesService.update(id, updateCourseDto);
+  }
+
+  @Patch(':id/reject')
+  rejectCourse(
+    @Param('id') id: number,
+    @Body('reason') reason: string,
+  ) {
+    return this.coursesService.rejectCourse(+id, reason);
   }
 
   @Put('/upload/:id')

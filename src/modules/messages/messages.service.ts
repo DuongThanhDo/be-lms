@@ -59,7 +59,7 @@ export class MessagesService {
     });
   }
 
-  async createMessage(createMessageDto: CreateMessageDto): Promise<Message> {
+  async createMessage(createMessageDto: CreateMessageDto): Promise<any> {
     const sender = await this.userRepository.findOneBy({
       id: createMessageDto.senderId,
     });
@@ -97,8 +97,15 @@ export class MessagesService {
     conversation.updatedAt = new Date();
     await this.conversationRepository.save(conversation);
 
-    return savedMessage;
+        // Lấy lại message kèm quan hệ cần thiết
+    const fullMessage = await this.messageRepository.findOne({
+      where: { id: savedMessage.id },
+      relations: ['sender', 'sender.profile', 'sender.profile.avatar', 'conversation'],
+    });
+
+    return fullMessage;
   }
+
   async getConversationWithParticipants(
     conversationId: number,
   ): Promise<Conversation | any> {

@@ -47,6 +47,9 @@ export class Course {
 
   @Column({ type: 'text', nullable: true })
   description: string;
+  
+  @Column({ type: 'text', nullable: true })
+  rejectionReason: string;
 
   @ManyToOne(() => Category, (category) => category.courses, {
     onDelete: 'SET NULL',

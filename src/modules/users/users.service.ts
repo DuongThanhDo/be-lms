@@ -77,6 +77,7 @@ export class UsersService {
   async findById(id: number): Promise<User | null> {
     const users = await this.userRepository.findOne({
       where: { id: id },
+      relations: ['profile', 'profile.avatar']
     });
 
     return plainToInstance(User, users);

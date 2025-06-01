@@ -102,6 +102,7 @@ export class CoursesService {
       type: course.type,
       image: course.image,
       status: course.status,
+      rejectionReason: course.rejectionReason,
       created_at: course.created_at,
       updated_at: course.updated_at,
     }));
@@ -220,6 +221,16 @@ export class CoursesService {
     });
     const course = await this.findOne(id);
     Object.assign(course, { ...dto, category, certificate });
+    return this.courseRepository.save(course);
+  }
+
+  async rejectCourse(id: number, reason: string) {
+    const course = await this.courseRepository.findOne({ where: { id } });
+    if (!course) throw new NotFoundException('Khóa học không tồn tại');
+
+    course.status = CourseStatus.REJECTED;
+    course.rejectionReason = reason;
+
     return this.courseRepository.save(course);
   }
 
